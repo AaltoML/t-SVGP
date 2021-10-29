@@ -36,7 +36,7 @@ jupytext --to notebook [filename].py
 ## Citation
 If you use the code in this repository for your research, please cite the paper as follows:
 ```bibtex
-@inproceedings{meronen2021,
+@inproceedings{adam2021,
   title={Dual Parameterization of Sparse Variational Gaussian Processes},
   author={Adam, Vincent and Chang, Paul Edmund and Khan, Mohammad Emtiyaz and Solin, Arno},
   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
