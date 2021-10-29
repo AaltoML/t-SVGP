@@ -1,0 +1,7 @@
+*.svg
+*.png
+*.jpg
+
+
+*egg*
+*__pycache__*
