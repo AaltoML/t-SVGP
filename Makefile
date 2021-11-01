@@ -16,6 +16,7 @@ install:  ## Install repo for developement
 	@echo "\n=== pip install package with dev requirements =============="
 	pip install --upgrade --upgrade-strategy eager \
 		-r tests_requirements.txt \
+		-r notebook_requirements.txt \
 		tensorflow${VERSION_TF} \
 		-e .
 
