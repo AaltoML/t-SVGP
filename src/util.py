@@ -96,7 +96,6 @@ def conditional_from_precision_sites(
     l: tf.Tensor,
     L: tf.Tensor = None,
     L2=None,
-    jitter=1e-9,
 ):
     """
     Given a g₁ and g2, and distribution p and q such that
@@ -226,7 +225,8 @@ def project_diag_sites(
         "shape.]",
     )
 
-    P = Kuf[None] if tf.rank(Kuf) == 2 else Kuf
+    num_latent = lambda_1.shape[-1]
+    P = tf.tile(Kuf[None], [num_latent, 1, 1]) if tf.rank(Kuf) == 2 else Kuf
     if Kuu is not None:
         Kuu = Kuu[None] if tf.rank(Kuu) == 2 else Kuu
         Luu = tf.linalg.cholesky(Kuu)
@@ -370,6 +370,15 @@ def posterior_from_dense_site(K, lambda_1, lambda_2_sqrt):
     m: M x P
     chol_S: P x M x M
     """
+    shape_constraints = [
+        (K, ["M", "M"]),
+        (lambda_1, ["N", "L"]),
+        (lambda_2_sqrt, ["L", "M", "M"])
+    ]
+    tf.debugging.assert_shapes(
+        shape_constraints,
+        message="posterior_from_dense_site() arguments ",
+    )
 
     L = lambda_2_sqrt  # L - likelihood precision square root
     m = K.shape[-1]
@@ -408,6 +417,16 @@ def posterior_from_dense_site_white(K, lambda_1, lambda_2, jitter=1e-9):
     m: M x P
     chol_S: P x M x M
     """
+
+    shape_constraints = [
+        (K, ["M", "M"]),
+        (lambda_1, ["N", "L"]),
+        (lambda_2, ["L", "M", "M"])
+    ]
+    tf.debugging.assert_shapes(
+        shape_constraints,
+        message="posterior_from_dense_site_white() arguments ",
+    )
     P = lambda_2  # L - likelihood precision square root
     m = K.shape[-1]
     I = tf.eye(m, dtype=tf.float64)

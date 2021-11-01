@@ -1,4 +1,4 @@
-"""Module containing the integration tests for the `CVI` class."""
+"""Module containing the integration tests for the `tVGP` class."""
 import gpflow
 import numpy as np
 import pytest
@@ -17,9 +17,9 @@ rng = np.random.RandomState(123)
 tf.random.set_seed(42)
 
 
-@pytest.fixture(name="cvi_gpr_optim_setup")
-def _cvi_gpr_optim_setup():
-    """Creates a GPR model and a matched CVI model (via natural gradient descent - single step)"""
+@pytest.fixture(name="tvgp_gpr_optim_setup")
+def _tvgp_gpr_optim_setup():
+    """Creates a GPR model and a matched tVGP model (via natural gradient descent - single step)"""
 
     time_points, observations, kernel, noise_variance = _setup()
     input_data = (tf.constant(time_points), tf.constant(observations))
@@ -31,20 +31,20 @@ def _cvi_gpr_optim_setup():
     )
 
     likelihood = Gaussian(variance=noise_variance)
-    cvi = t_VGP(
+    tvgp = t_VGP(
         data=(time_points, observations),
         kernel=kernel,
         likelihood=likelihood,
     )
 
-    cvi.update_variational_parameters(beta=1.0)
+    tvgp.update_variational_parameters(beta=1.0)
 
-    return cvi, gpr
+    return tvgp, gpr
 
 
-@pytest.fixture(name="cvi_vgp_optim_setup")
-def _cvi_vgp_optim_setup():
-    """Creates a VGP model and a matched CVI model"""
+@pytest.fixture(name="tvgp_qvgp_optim_setup")
+def _tvgp_qvgp_optim_setup():
+    """Creates a VGP model and a matched tVGP model"""
 
     time_points, observations, kernel, noise_variance = _setup()
     input_data = (
@@ -53,13 +53,13 @@ def _cvi_vgp_optim_setup():
     )
 
     likelihood = Bernoulli()
-    cvi = t_VGP(
+    tvgp = t_VGP(
         data=input_data,
         kernel=kernel,
         likelihood=likelihood,
     )
 
-    vgp = gpflow.models.VGP(
+    qvgp = gpflow.models.VGP(
         data=input_data,
         kernel=kernel,
         mean_function=None,
@@ -67,18 +67,18 @@ def _cvi_vgp_optim_setup():
     )
 
     natgrad_rep = 20
-    # one step of natgrads for CVI
-    [cvi.update_variational_parameters(beta=1.0) for _ in range(natgrad_rep)]
+    # one step of natgrads for tVGP
+    [tvgp.update_variational_parameters(beta=1.0) for _ in range(natgrad_rep)]
     # one step of natgrads for VGP
     natgrad_opt = NaturalGradient(gamma=1.0)
-    variational_params = [(vgp.q_mu, vgp.q_sqrt)]
-    training_loss = vgp.training_loss_closure()
+    variational_params = [(qvgp.q_mu, qvgp.q_sqrt)]
+    training_loss = qvgp.training_loss_closure()
     [
         natgrad_opt.minimize(training_loss, var_list=variational_params)
         for _ in range(natgrad_rep)
     ]
 
-    return cvi, vgp
+    return tvgp, qvgp
 
 
 def _setup():
@@ -102,59 +102,59 @@ def _setup():
     return input_points, observations, kernel, variance
 
 
-def test_cvi_elbo_optimal(cvi_gpr_optim_setup):
+def test_tvgp_elbo_optimal(tvgp_gpr_optim_setup):
     """Test that the value of the ELBO at the optimum is the same as the GPR Log Likelihood."""
-    cvi, gpr = cvi_gpr_optim_setup
-    np.testing.assert_almost_equal(cvi.elbo(), gpr.log_marginal_likelihood(), decimal=4)
+    tvgp, gpr = tvgp_gpr_optim_setup
+    np.testing.assert_almost_equal(tvgp.elbo(), gpr.log_marginal_likelihood(), decimal=4)
 
 
-def test_cvi_unchanged_at_optimum(cvi_gpr_optim_setup):
+def test_tvgp_unchanged_at_optimum(tvgp_gpr_optim_setup):
     """Test that the update does not change sites at the optimum"""
-    cvi, _ = cvi_gpr_optim_setup
+    tvgp, _ = tvgp_gpr_optim_setup
     # ELBO at optimum
-    optim_elbo = cvi.elbo()
+    optim_elbo = tvgp.elbo()
     # site update step
-    cvi.update_variational_parameters(beta=1.0)
+    tvgp.update_variational_parameters(beta=1.0)
     # ELBO after step
-    new_elbo = cvi.elbo()
+    new_elbo = tvgp.elbo()
 
     np.testing.assert_almost_equal(optim_elbo, new_elbo, decimal=4)
 
 
-def test_optimal_sites(cvi_gpr_optim_setup):
+def test_optimal_sites(tvgp_gpr_optim_setup):
     """Test that the optimal value of the exact sites match the true sites"""
-    cvi, gpr = cvi_gpr_optim_setup
+    tvgp, gpr = tvgp_gpr_optim_setup
 
-    cvi_nat1 = cvi.lambda_1.numpy()
-    cvi_nat2 = cvi.lambda_2.numpy()
+    tvgp_nat1 = tvgp.lambda_1.numpy()
+    tvgp_nat2 = tvgp.lambda_2.numpy()
 
     # manually compute the optimal sites
     s2 = gpr.likelihood.variance.numpy()
     _, Y = gpr.data
     gpr_nat1 = Y / s2
-    gpr_nat2 = 1.0 / s2 * np.ones_like(cvi_nat2)
+    gpr_nat2 = 1.0 / s2 * np.ones_like(tvgp_nat2)
 
-    np.testing.assert_allclose(cvi_nat1, gpr_nat1)
-    np.testing.assert_allclose(cvi_nat2, gpr_nat2)
+    np.testing.assert_allclose(tvgp_nat1, gpr_nat1)
+    np.testing.assert_allclose(tvgp_nat2, gpr_nat2)
 
 
-def test_gradient_wrt_hyperparameters(cvi_vgp_optim_setup):
-    """Test that for matched posteriors, gradients wrt hyperparameters match for cvi and vgp"""
+def test_gradient_wrt_hyperparameters(tvgp_qvgp_optim_setup):
+    """Test that for matched posteriors, gradients wrt hyperparameters match for tvgp and qvgp"""
 
-    # cvi and vgp models after exact E-step
-    cvi, vgp = cvi_vgp_optim_setup
+    # tvgp and qvgp models after exact E-step
+    tvgp, qvgp = tvgp_qvgp_optim_setup
 
-    # gradient of VGP elbo wrt kernel hyperparameters
+    # gradient of qVGP elbo wrt kernel hyperparameters
     with tf.GradientTape(watch_accessed_variables=False) as tape:
-        tape.watch(vgp.kernel.trainable_variables)
-        objective = vgp.training_loss()
-    grads_vgp = tape.gradient(objective, vgp.kernel.trainable_variables)
+        tape.watch(qvgp.kernel.trainable_variables)
+        objective = qvgp.training_loss()
+    grads_qvgp = tape.gradient(objective, qvgp.kernel.trainable_variables)
 
-    # gradient of CVI elbo wrt kernel hyperparameters
+    # gradient of tVGP elbo wrt kernel hyperparameters
     with tf.GradientTape(watch_accessed_variables=False) as tape:
-        tape.watch(cvi.kernel.trainable_variables)
-        objective = -cvi.elbo()
-    grads_cvi = tape.gradient(objective, cvi.kernel.trainable_variables)
+        tape.watch(tvgp.kernel.trainable_variables)
+        objective = -tvgp.elbo()
+    grads_tvgp = tape.gradient(objective, tvgp.kernel.trainable_variables)
 
     # compare gradients
-    np.testing.assert_array_almost_equal(grads_vgp, grads_cvi, decimal=4)
+    np.testing.assert_array_almost_equal(grads_qvgp, grads_tvgp, decimal=4)

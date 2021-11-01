@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.13.0
+#       jupytext_version: 1.11.0
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -28,7 +28,7 @@ X = np.loadtxt("data/banana_X_train", delimiter=",")
 Y = np.loadtxt("data/banana_Y_train", delimiter=",").reshape(-1, 1)
 mask = Y[:, 0] == 1
 N = len(Y)
-
+print(N)
 
 plt.figure(figsize=(6, 6))
 plt.plot(X[mask, 0], X[mask, 1], "oC0", mew=0, alpha=0.5)
@@ -39,7 +39,7 @@ plt.show()
 
 
 # +
-M = 10  # Number of inducing locations
+M = 100  # Number of inducing locations
 Z = X[:M, :]
 
 # GP parameters
@@ -112,9 +112,14 @@ xx, yy = np.meshgrid(x_grid, x_grid)
 Xplot = np.vstack((xx.flatten(), yy.flatten())).T
 p, _ = m_t.predict_y(Xplot)  # here we only care about the mean
 plt.imshow(p.numpy().reshape(n_grid, n_grid), alpha=.3, extent=[-3,3,-3,3], origin='lower')
+#plt.plot(X[mask, 0], X[mask, 1], "oC0", mew=0, alpha=0.5)
+#_ = plt.plot(
+#    X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5
+#)
+plt.show()
 plt.plot(X[mask, 0], X[mask, 1], "oC0", mew=0, alpha=0.5)
 _ = plt.plot(
-    X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5
+   X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5
 )
 plt.show()
 

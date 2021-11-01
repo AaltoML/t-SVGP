@@ -1,7 +1,8 @@
 *.svg
 *.png
 *.jpg
-
-
+*.idea*
+*ipynb_checkpoints*
+*.ipynb
 *egg*
 *__pycache__*

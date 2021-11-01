@@ -1,4 +1,4 @@
-"""Module containing the integration tests for the `CVI` class."""
+"""Module containing the integration tests for the `t_SVGP_white` class."""
 import gpflow
 import numpy as np
 import pytest
@@ -41,7 +41,7 @@ def _setup():
 
 @pytest.fixture(name="t_svgp_normal_vs_white_init")
 def _t_svgp_normal_vs_white_init():
-    """Creates a GPR model and a matched Sparse CVI model (via natural gradient descent - single step)"""
+    """Creates a GPR model and a matched tSVGP model (via natural gradient descent - single step)"""
 
     time_points, observations, kernel, noise_variance = _setup()
     input_data = (tf.constant(time_points), tf.constant(observations))
@@ -95,7 +95,7 @@ def test_prediction_after_update(t_svgp_normal_vs_white_init):
 
 @pytest.fixture(name="t_svgp_gpr_optim_setup")
 def _t_svgp_gpr_optim_setup():
-    """Creates a GPR model and a matched Sparse CVI model (via natural gradient descent - single step)"""
+    """Creates a GPR model and a matched tSVGP model (via natural gradient descent - single step)"""
 
     time_points, observations, kernel, noise_variance = _setup()
     input_data = (tf.constant(time_points), tf.constant(observations) * 0)
@@ -120,7 +120,7 @@ def _t_svgp_gpr_optim_setup():
 
 @pytest.fixture(name="t_svgp_svgp_optim_setup")
 def _t_svgp_svgp_optim_setup():
-    """Creates a SVGP model and a matched Sparse CVI model (E-step)"""
+    """Creates a SVGP model and a matched tSVGP model (E-step)"""
 
     def __t_svgp_svgp_optim_setup(num_latent_gps=1):
 
@@ -208,13 +208,12 @@ def test_t_svgp_minibatch_same_elbo(t_svgp_gpr_optim_setup):
 
     np.testing.assert_almost_equal(optim_elbo2, optim_elbo1, decimal=4)
 
-
-# todo: does not work for num_latent > 1
+# todo make broadcastable
 @pytest.mark.parametrize("num_latent_gps", [1])
 def test_gradient_wrt_hyperparameters(t_svgp_svgp_optim_setup, num_latent_gps):
     """Test that for matched posteriors (through natgrads, gradients wrt hyperparameters match for t_svgp and svgp"""
 
-    # cvi and vgp models after exact E-step
+    # tsvgp and qsvgp models after exact E-step
     t_svgp, svgp, data = t_svgp_svgp_optim_setup(num_latent_gps)
 
     # gradient of SVGP elbo wrt kernel hyperparameters
@@ -228,6 +227,9 @@ def test_gradient_wrt_hyperparameters(t_svgp_svgp_optim_setup, num_latent_gps):
         tape.watch(t_svgp.kernel.trainable_variables)
         objective = t_svgp.elbo(data)
     grads_t_svgp = tape.gradient(objective, t_svgp.kernel.trainable_variables)
+
+    # compare elbos
+    np.testing.assert_array_almost_equal(svgp.elbo(data), t_svgp.elbo(data), decimal=4)
 
     # compare gradients
     for g_svgp, g_t_svgp in zip(grads_svgp, grads_t_svgp):

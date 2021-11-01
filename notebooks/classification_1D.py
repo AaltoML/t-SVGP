@@ -113,18 +113,18 @@ print("Computing elbos for new parameter grid")
 
 # ======================================== ELBO for different theta
 N_grid = 100
-llh_svgp = np.zeros((N_grid,))
-llh_svgp_white = np.zeros((N_grid,))
-llh_scvi = np.zeros((N_grid,))
+llh_qsvgp = np.zeros((N_grid,))
+llh_qsvgp_white = np.zeros((N_grid,))
+llh_tsvgp = np.zeros((N_grid,))
 vars_gp = np.linspace(0.05, 1.0, N_grid)
 
 for i, v in enumerate(tqdm(vars_gp)):
     m_t.kernel.variance.assign(tf.constant(v))
-    llh_scvi[i] = m_t.elbo(data).numpy()
+    llh_tsvgp[i] = m_t.elbo(data).numpy()
     m_q.kernel.variance.assign(tf.constant(v))
-    llh_svgp[i] = m_q.elbo(data).numpy()
+    llh_qsvgp[i] = m_q.elbo(data).numpy()
     m_q_white.kernel.variance.assign(tf.constant(v))
-    llh_svgp_white[i] = m_q_white.elbo(data).numpy()
+    llh_qsvgp_white[i] = m_q_white.elbo(data).numpy()
 
 print("done.")
 
@@ -133,13 +133,13 @@ print("done.")
 
 # ======================================== Visualize
 plt.figure()
-plt.plot(vars_gp, llh_scvi, label="t-SVGP", linewidth=4)
-plt.plot(vars_gp, llh_svgp, label="q-SVGP", linewidth=4)
-plt.plot(vars_gp, llh_svgp_white, label="q-SVGP (whitened)", linewidth=4)
+plt.plot(vars_gp, llh_tsvgp, label="t-SVGP", linewidth=4)
+plt.plot(vars_gp, llh_qsvgp, label="q-SVGP", linewidth=4)
+plt.plot(vars_gp, llh_qsvgp_white, label="q-SVGP (whitened)", linewidth=4)
 plt.vlines(
     var_gp,
-    ymin=llh_scvi.min() - 10,
-    ymax=llh_scvi.max() + 10,
+    ymin=llh_tsvgp.min() - 10,
+    ymax=llh_tsvgp.max() + 10,
     color=[0, 0, 0, 1.0],
     linewidth=1.5,
     linestyle="dashed",
@@ -147,8 +147,8 @@ plt.vlines(
 plt.xlim([0.0, 1.0])
 plt.ylim(
     [
-        llh_scvi.min() - 0.0 * (llh_scvi.max() - llh_scvi.min()),
-        llh_scvi.max() + 0.4 * (llh_scvi.max() - llh_scvi.min()),
+        llh_tsvgp.min() - 0.0 * (llh_tsvgp.max() - llh_tsvgp.min()),
+        llh_tsvgp.max() + 0.4 * (llh_tsvgp.max() - llh_tsvgp.min()),
     ]
 )
 plt.legend()

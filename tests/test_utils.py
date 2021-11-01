@@ -3,6 +3,7 @@ import gpflow
 import numpy as np
 import tensorflow as tf
 from gpflow.conditionals import conditional
+import pytest
 
 from src.sites import DiagSites
 from src.util import (
@@ -23,7 +24,7 @@ rng = np.random.RandomState(123)
 tf.random.set_seed(42)
 
 
-def _setup():
+def _setup(num_latent_gps=1):
 
     """Covariance and sites"""
     input_points = rng.rand(NUM_DATA, 1) * 2 - 1  # X values
@@ -35,17 +36,18 @@ def _setup():
     Kuu = kernel.K(inducing_points)
     Kuf = kernel.K(inducing_points, input_points)
 
-    lambda_1 = tf.zeros_like(input_points) + 1
-    lambda_2 = tf.ones_like(input_points)
+    lambda_1 = tf.constant(np.random.randn(NUM_DATA, num_latent_gps))
+    lambda_2 = tf.ones_like(np.random.randn(NUM_DATA, num_latent_gps)**2)
     sites = DiagSites(lambda_1, lambda_2)
 
     return Kuu, Kuf, kernel, sites, input_points, inducing_points
 
 
-def test_site_conditionals():
+@pytest.mark.parametrize("num_latent_gps", [1, 2])
+def test_site_conditionals(num_latent_gps):
     """Test the conditional using sites versus gpflow's conditional"""
 
-    Kuu, Kuf, kernel, sites, input_points, inducing_points = _setup()
+    Kuu, Kuf, kernel, sites, input_points, inducing_points = _setup(num_latent_gps)
     l, L = project_diag_sites(Kuf, sites.lambda_1, sites.lambda_2, Kuu=None)
     l_white, L_white = project_diag_sites(Kuf, sites.lambda_1, sites.lambda_2, Kuu=Kuu)
 

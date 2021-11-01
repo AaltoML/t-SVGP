@@ -10,6 +10,7 @@ Module for the t-SVGP model
 
 import abc
 
+import gpflow
 import numpy as np
 import tensorflow as tf
 from gpflow import kullback_leiblers
@@ -219,7 +220,8 @@ class t_SVGP(base_SVGP):
         )  # [P, M, M] or [M, M]
         return posterior_from_dense_site(K_uu, self.lambda_1, self.lambda_2_sqrt)
 
-    def predict_f(
+    # todo : make broadcastable
+    def new_predict_f(
         self, Xnew: InputData, full_cov=False, full_output_cov=False
     ) -> MeanAndVariance:
         """
@@ -231,6 +233,7 @@ class t_SVGP(base_SVGP):
         )  # [P, M, M] or [M, M]
         K_uf = Kuf(self.inducing_variable, self.kernel, Xnew)  # [P, M, M] or [M, M]
         K_ff = self.kernel.K_diag(Xnew)[..., None]
+
         mu, var = conditional_from_precision_sites(
             K_uu, K_ff, K_uf, self.lambda_1, L=self.lambda_2_sqrt
         )
@@ -252,7 +255,12 @@ class t_SVGP(base_SVGP):
         Updates the params
         """
         mean, var = self.predict_f(X)
-        meanZ, _ = self.predict_f(self.inducing_variable.Z)
+
+        # todo : hack to get heterokedastic demo to run
+        if isinstance(self.inducing_variable, gpflow.inducing_variables.SharedIndependentInducingVariables):
+            meanZ, _ = self.predict_f(self.inducing_variable.inducing_variables[0].Z)
+        else:
+            meanZ, _ = self.predict_f(self.inducing_variable.Z)
 
         with tf.GradientTape() as g:
             g.watch([mean, var])
@@ -274,7 +282,8 @@ class t_SVGP(base_SVGP):
         # ▽μ₁[Var_exp] = aₙαₙ ,
         # ▽μ2[Var_exp] = λₙaₙaₙᵀ
 
-        A = tf.tile(A[..., None], [1, 1, self.num_latent_gps])
+        if tf.rank(A)==2:
+            A = tf.tile(A[..., None], [1, 1, self.num_latent_gps])
         grads = [
             tf.einsum("nml,nl->ml", A, grads[0]),
             tf.einsum("nml,nol,nl->lmo", A, A, grads[1]),

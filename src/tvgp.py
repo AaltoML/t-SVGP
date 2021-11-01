@@ -159,7 +159,7 @@ class t_VGP(GPModel):
         d_exp_dv = g.gradient(var_exp, post_v)
         del g
 
-        # Take the CVI step and transform to be ▽μ[Var_exp]
+        # Take the tVGP step and transform to be ▽μ[Var_exp]
         lambda_1 = (1.0 - beta) * self.lambda_1 + beta * (
             d_exp_dm - 2.0 * (d_exp_dv * post_m)
         )

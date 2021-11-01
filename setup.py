@@ -15,7 +15,7 @@ extra_requirements = {
 }
 
 setup(
-    name="cvi_gp",
+    name="t-SVGP",
     version="0",
     license="Creative Commons Attribution-Noncommercial-Share Alike license",
     packages=find_packages(exclude=["demos*"]),

@@ -1,4 +1,4 @@
-"""Module containing the integration tests for the `CVI` class."""
+"""Module containing the integration tests for the `t_SVGP_sites` class."""
 import gpflow
 import numpy as np
 import pytest
@@ -19,7 +19,7 @@ tf.random.set_seed(42)
 
 @pytest.fixture(name="tsvgp_gpr_optim_setup")
 def _tsvgp_gpr_optim_setup():
-    """Creates a GPR model and a matched Sparse CVI model (via natural gradient descent - single step)"""
+    """Creates a GPR model and a matched tSVGP model (via natural gradient descent - single step)"""
 
     time_points, observations, kernel, noise_variance = _setup()
     input_data = (tf.constant(time_points), tf.constant(observations))
@@ -44,9 +44,9 @@ def _tsvgp_gpr_optim_setup():
     return tsvgp, gpr
 
 
-@pytest.fixture(name="tsvgp_svgp_optim_setup")
-def _tsvgp_svgp_optim_setup():
-    """Creates a SVGP model and a matched Sparse CVI model (E-step)"""
+@pytest.fixture(name="tsvgp_qsvgp_optim_setup")
+def _tsvgp_qsvgp_optim_setup():
+    """Creates a qSVGP model and a matched tSVGP model (E-step)"""
 
     time_points, observations, kernel, noise_variance = _setup()
     input_data = (
@@ -56,7 +56,7 @@ def _tsvgp_svgp_optim_setup():
 
     likelihood = Bernoulli()
 
-    svgp = gpflow.models.SVGP(
+    qsvgp = gpflow.models.SVGP(
         kernel=kernel,
         likelihood=likelihood,
         inducing_variable=gpflow.inducing_variables.InducingPoints(time_points),
@@ -77,14 +77,14 @@ def _tsvgp_svgp_optim_setup():
         tsvgp.natgrad_step(lr=lr)
     # one step of natgrads for SVGP
     natgrad_opt = NaturalGradient(gamma=lr)
-    variational_params = [(svgp.q_mu, svgp.q_sqrt)]
-    training_loss = svgp.training_loss_closure(input_data)
+    variational_params = [(qsvgp.q_mu, qsvgp.q_sqrt)]
+    training_loss = qsvgp.training_loss_closure(input_data)
     [
         natgrad_opt.minimize(training_loss, var_list=variational_params)
         for _ in range(natgrad_rep)
     ]
 
-    return tsvgp, svgp, input_data
+    return tsvgp, qsvgp, input_data
 
 
 def _setup():
@@ -130,17 +130,17 @@ def test_tsvgp_unchanged_at_optimum(tsvgp_gpr_optim_setup):
     np.testing.assert_almost_equal(optim_elbo, new_elbo, decimal=4)
 
 
-def test_gradient_wrt_hyperparameters(tsvgp_svgp_optim_setup):
+def test_gradient_wrt_hyperparameters(tsvgp_qsvgp_optim_setup):
     """Test that for matched posteriors (through natgrads, gradients wrt hyperparameters match for tsvgp and svgp"""
 
-    # cvi and vgp models after exact E-step
-    tsvgp, svgp, data = tsvgp_svgp_optim_setup
+    # tsvgp and qsvgp models after exact E-step
+    tsvgp, qsvgp, data = tsvgp_qsvgp_optim_setup
 
     # gradient of SVGP elbo wrt kernel hyperparameters
     with tf.GradientTape(watch_accessed_variables=False) as tape:
-        tape.watch(svgp.kernel.trainable_variables)
-        objective = svgp.training_loss(data)
-    grads_svgp = tape.gradient(objective, svgp.kernel.trainable_variables)
+        tape.watch(qsvgp.kernel.trainable_variables)
+        objective = qsvgp.training_loss(data)
+    grads_qsvgp = tape.gradient(objective, qsvgp.kernel.trainable_variables)
 
     # gradient of tsvgp elbo wrt kernel hyperparameters
     with tf.GradientTape(watch_accessed_variables=False) as tape:
@@ -149,7 +149,7 @@ def test_gradient_wrt_hyperparameters(tsvgp_svgp_optim_setup):
     grads_tsvgp = tape.gradient(objective, tsvgp.kernel.trainable_variables)
 
     # compare gradients
-    np.testing.assert_array_almost_equal(grads_svgp, grads_tsvgp, decimal=4)
+    np.testing.assert_array_almost_equal(grads_qsvgp, grads_tsvgp, decimal=4)
 
 
 def test_optimal_sites(tsvgp_gpr_optim_setup):
@@ -163,7 +163,6 @@ def test_optimal_sites(tsvgp_gpr_optim_setup):
     s2 = gpr.likelihood.variance.numpy()
     _, Y = gpr.data
     gpr_nat1 = Y / s2
-    # ! note the alternative parameterization from CVI
     gpr_nat2 = 1.0 / s2 * np.ones_like(tsvgp_nat2)
 
     np.testing.assert_allclose(tsvgp_nat1, gpr_nat1)
