@@ -1,3 +1,5 @@
+[![Quality checks and Tests](https://github.com/AaltoML/t-SVGP/actions/workflows/quality-check.yaml/badge.svg)](https://github.com/AaltoML/t-SVGP/actions/workflows/quality-check.yaml)
+
 # Dual Parameterization of Sparse Variational Gaussian Processes
 
 This repository is the official implementation of the methods in the publication:
