@@ -39,9 +39,9 @@ Y = (F > 0).astype(float)
 var_gp = 0.6
 len_gp = 0.5
 
-x_grid = np.linspace(-1,1,100)
+x_grid = np.linspace(-1, 1, 100)
 plt.plot(x_grid, func(x_grid))
-plt.plot(X, Y, 'o')
+plt.plot(X, Y, "o")
 
 # +
 # =============================================== Set up models
@@ -97,16 +97,12 @@ variational_params = [(m_q.q_mu, m_q.q_sqrt)]
 print("q-SVGP elbo:", -training_loss().numpy())
 
 variational_params_white = [(m_q_white.q_mu, m_q_white.q_sqrt)]
-[
-    natgrad_opt.minimize(training_loss_white, var_list=variational_params_white)
-    for _ in range(nit)
-]
+[natgrad_opt.minimize(training_loss_white, var_list=variational_params_white) for _ in range(nit)]
 print("q-SVGP (white) elbo:", -training_loss_white().numpy())
 
 elbo = m_t.elbo(data).numpy()
 
 print("Computing elbos for new parameter grid")
-
 
 
 # +
@@ -155,4 +151,3 @@ plt.legend()
 plt.xlabel("$\\theta$")
 plt.ylabel("ELBO")
 plt.show()
-

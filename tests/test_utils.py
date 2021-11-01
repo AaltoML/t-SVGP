@@ -1,17 +1,17 @@
 """Module containing the unit tests for the util modules"""
 import gpflow
 import numpy as np
+import pytest
 import tensorflow as tf
 from gpflow.conditionals import conditional
-import pytest
 
 from src.sites import DiagSites
 from src.util import (
+    conditional_from_precision_sites,
     conditional_from_precision_sites_white,
     kl_from_precision_sites_white,
     posterior_from_dense_site_white,
     project_diag_sites,
-    conditional_from_precision_sites
 )
 from tests.tools import mean_cov_from_precision_site
 
@@ -29,15 +29,13 @@ def _setup(num_latent_gps=1):
     """Covariance and sites"""
     input_points = rng.rand(NUM_DATA, 1) * 2 - 1  # X values
     inducing_points = rng.rand(NUM_INDUCING, 1) * 2 - 1  # X values
-    kernel = gpflow.kernels.SquaredExponential(
-        lengthscales=LENGTH_SCALE, variance=VARIANCE
-    )
+    kernel = gpflow.kernels.SquaredExponential(lengthscales=LENGTH_SCALE, variance=VARIANCE)
 
     Kuu = kernel.K(inducing_points)
     Kuf = kernel.K(inducing_points, input_points)
 
     lambda_1 = tf.constant(np.random.randn(NUM_DATA, num_latent_gps))
-    lambda_2 = tf.ones_like(np.random.randn(NUM_DATA, num_latent_gps)**2)
+    lambda_2 = tf.ones_like(np.random.randn(NUM_DATA, num_latent_gps) ** 2)
     sites = DiagSites(lambda_1, lambda_2)
 
     return Kuu, Kuf, kernel, sites, input_points, inducing_points
@@ -50,7 +48,6 @@ def test_site_conditionals(num_latent_gps):
     Kuu, Kuf, kernel, sites, input_points, inducing_points = _setup(num_latent_gps)
     l, L = project_diag_sites(Kuf, sites.lambda_1, sites.lambda_2, Kuu=None)
     l_white, L_white = project_diag_sites(Kuf, sites.lambda_1, sites.lambda_2, Kuu=Kuu)
-
 
     q_mu, cov = mean_cov_from_precision_site(Kuu, l, L)
     q_sqrt = tf.linalg.cholesky(cov)

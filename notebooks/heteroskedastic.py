@@ -18,7 +18,7 @@ data = (X, Y)
 N = len(X)
 Y /= Y.std()
 plt.figure()
-plt.plot(X, Y, '*')
+plt.plot(X, Y, "*")
 plt.show()
 
 # # Declaring heteroskedastic regression model
@@ -39,12 +39,10 @@ M = 50
 Z = np.linspace(X.min(), X.max(), M)[:, None]  # Z must be of shape [M, 1]
 
 inducing_variable = gpf.inducing_variables.SharedIndependentInducingVariables(
-        gpf.inducing_variables.InducingPoints(Z),
+    gpf.inducing_variables.InducingPoints(Z),
 )
 
-m_tsvgp = t_SVGP(
-    kernel,
-    likelihood, inducing_variable, num_data=N, num_latent_gps=2)
+m_tsvgp = t_SVGP(kernel, likelihood, inducing_variable, num_data=N, num_latent_gps=2)
 
 
 # -
@@ -63,16 +61,17 @@ def plot_distribution(X, Y, loc, scale, index=0):
     plt.plot(x, ub, color="silver")
     plt.plot(X, loc, color="black")
     plt.scatter(X, Y, color="gray", alpha=0.8)
-    plt.savefig('het.png')
+    plt.savefig("het.png")
     plt.show()
-    
+
+
 Ymean, Yvar = m_tsvgp.predict_y(X)
 Ymean = Ymean.numpy().squeeze()
 Ystd = tf.sqrt(Yvar).numpy().squeeze()
 plot_distribution(X, Y, Ymean, Ystd, -1)
 # -
 
-# # Training model 
+# # Training model
 
 
 # +
@@ -82,14 +81,20 @@ lr_natgrad = 0.5
 nit_e = 2
 nit_m = 1
 
+
 def E_step():
     [m_tsvgp.natgrad_step(X, Y, lr_natgrad) for _ in range(nit_e)]
 
+
 optimizer = tf.optimizers.Adam(lr_adam)
+
 
 @tf.function
 def M_step():
-    [optimizer.minimize(m_tsvgp.training_loss_closure(data), m_tsvgp.kernel.trainable_variables) for _ in range(nit_m)]
+    [
+        optimizer.minimize(m_tsvgp.training_loss_closure(data), m_tsvgp.kernel.trainable_variables)
+        for _ in range(nit_m)
+    ]
 
 
 # -
@@ -104,10 +109,7 @@ for r in range(nrep):
         print(r, m_tsvgp.elbo(data))
 
 
-
 Ymean, Yvar = m_tsvgp.predict_y(X)
 Ymean = Ymean.numpy().squeeze()
 Ystd = tf.sqrt(Yvar).numpy().squeeze()
 plot_distribution(X, Y, Ymean, Ystd, r)
-
-

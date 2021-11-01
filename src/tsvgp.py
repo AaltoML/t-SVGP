@@ -23,8 +23,9 @@ from gpflow.models.util import inducingpoint_wrapper
 
 from .sites import DenseSites
 from .util import (
+    conditional_from_precision_sites,
     gradient_transformation_mean_var_to_expectation,
-    posterior_from_dense_site, conditional_from_precision_sites
+    posterior_from_dense_site,
 )
 
 
@@ -93,9 +94,7 @@ class base_SVGP(GPModel, ExternalDataTrainingLossMixin, abc.ABC):
             scale = tf.cast(1.0, kl.dtype)
         return tf.reduce_sum(var_exp) * scale - kl
 
-    def predict_f(
-        self, Xnew: InputData, full_cov=False, full_output_cov=False
-    ) -> MeanAndVariance:
+    def predict_f(self, Xnew: InputData, full_cov=False, full_output_cov=False) -> MeanAndVariance:
         """
         Posterior prediction at new input Xnew
         :param Xnew: N x D Tensor
@@ -111,9 +110,7 @@ class base_SVGP(GPModel, ExternalDataTrainingLossMixin, abc.ABC):
             white=False,
             full_output_cov=full_output_cov,
         )
-        tf.debugging.assert_positive(
-            var
-        )
+        tf.debugging.assert_positive(var)
         return mu + self.mean_function(Xnew), var
 
 
@@ -159,9 +156,7 @@ class t_SVGP(base_SVGP):
         self.whiten = False
         self.force = force
 
-    def _init_variational_parameters(
-        self, num_inducing, lambda_1, lambda_2_sqrt, **kwargs
-    ):
+    def _init_variational_parameters(self, num_inducing, lambda_1, lambda_2_sqrt, **kwargs):
         """
         Constructs the site parameters λ₁, Λ₂.
         for site t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)
@@ -176,11 +171,7 @@ class t_SVGP(base_SVGP):
             Second order natural parameter of the variational site.
         """
 
-        lambda_1 = (
-            np.zeros((num_inducing, self.num_latent_gps))
-            if lambda_1 is None
-            else lambda_1
-        )
+        lambda_1 = np.zeros((num_inducing, self.num_latent_gps)) if lambda_1 is None else lambda_1
         if lambda_2_sqrt is None:
             lambda_2_sqrt = [
                 -tf.eye(num_inducing, dtype=default_float()) * 1e-10
@@ -237,11 +228,8 @@ class t_SVGP(base_SVGP):
         mu, var = conditional_from_precision_sites(
             K_uu, K_ff, K_uf, self.lambda_1, L=self.lambda_2_sqrt
         )
-        tf.debugging.assert_positive(
-            var
-        )  # We really should make the tests pass with this here
+        tf.debugging.assert_positive(var)  # We really should make the tests pass with this here
         return mu + self.mean_function(Xnew), var
-
 
     def natgrad_step(self, X, Y, lr=0.1, jitter=1e-9):
         """Takes natural gradient step in Variational parameters in the local parameters
@@ -257,7 +245,9 @@ class t_SVGP(base_SVGP):
         mean, var = self.predict_f(X)
 
         # todo : hack to get heterokedastic demo to run
-        if isinstance(self.inducing_variable, gpflow.inducing_variables.SharedIndependentInducingVariables):
+        if isinstance(
+            self.inducing_variable, gpflow.inducing_variables.SharedIndependentInducingVariables
+        ):
             meanZ, _ = self.predict_f(self.inducing_variable.inducing_variables[0].Z)
         else:
             meanZ, _ = self.predict_f(self.inducing_variable.Z)
@@ -271,18 +261,18 @@ class t_SVGP(base_SVGP):
         eps = 1e-8
         grads[1] = tf.minimum(grads[1], -eps * tf.ones_like(grads[1]))
 
-        I = tf.eye(self.num_inducing, dtype=tf.float64)
+        Id = tf.eye(self.num_inducing, dtype=tf.float64)
 
         # Compute the projection matrix A from prior information
         K_uu = Kuu(self.inducing_variable, self.kernel)
         K_uf = Kuf(self.inducing_variable, self.kernel, X)  # [P, M, M] or [M, M]
-        chol_Kuu = tf.linalg.cholesky(K_uu + I * jitter)
+        chol_Kuu = tf.linalg.cholesky(K_uu + Id * jitter)
         A = tf.transpose(tf.linalg.cholesky_solve(chol_Kuu, K_uf))
 
         # ▽μ₁[Var_exp] = aₙαₙ ,
         # ▽μ2[Var_exp] = λₙaₙaₙᵀ
 
-        if tf.rank(A)==2:
+        if tf.rank(A) == 2:
             A = tf.tile(A[..., None], [1, 1, self.num_latent_gps])
         grads = [
             tf.einsum("nml,nl->ml", A, grads[0]),
@@ -306,7 +296,7 @@ class t_SVGP(base_SVGP):
         lambda_2 = (1 - lr) * lambda_2 + lr * scale * grad_mu[1]
 
         # transform and perform update
-        lambda_2_sqrt = -tf.linalg.cholesky(-2.0 * lambda_2 + I * jitter)
+        lambda_2_sqrt = -tf.linalg.cholesky(-2.0 * lambda_2 + Id * jitter)
         # To match SVGP you need to eliminate this jitter for minibatching
         self.lambda_1.assign(lambda_1)
         self.lambda_2_sqrt.assign(lambda_2_sqrt)

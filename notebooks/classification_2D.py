@@ -32,9 +32,7 @@ print(N)
 
 plt.figure(figsize=(6, 6))
 plt.plot(X[mask, 0], X[mask, 1], "oC0", mew=0, alpha=0.5)
-_ = plt.plot(
-    X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5
-)
+_ = plt.plot(X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5)
 plt.show()
 
 
@@ -74,7 +72,6 @@ set_trainable(m_q.kernel.lengthscales, False)
 set_trainable(m_t.kernel.lengthscales, False)
 
 
-
 # +
 lr_natgrad = 0.8
 nit = 10
@@ -96,10 +93,7 @@ variational_params = [(m_q.q_mu, m_q.q_sqrt)]
 print("q-SVGP elbo:", -training_loss().numpy())
 
 variational_params_white = [(m_q_white.q_mu, m_q_white.q_sqrt)]
-[
-    natgrad_opt.minimize(training_loss_white, var_list=variational_params_white)
-    for _ in range(nit)
-]
+[natgrad_opt.minimize(training_loss_white, var_list=variational_params_white) for _ in range(nit)]
 print("q-SVGP (white) elbo:", -training_loss_white().numpy())
 
 elbo = m_t.elbo(data).numpy()
@@ -111,16 +105,14 @@ x_grid = np.linspace(-3, 3, n_grid)
 xx, yy = np.meshgrid(x_grid, x_grid)
 Xplot = np.vstack((xx.flatten(), yy.flatten())).T
 p, _ = m_t.predict_y(Xplot)  # here we only care about the mean
-plt.imshow(p.numpy().reshape(n_grid, n_grid), alpha=.3, extent=[-3,3,-3,3], origin='lower')
-#plt.plot(X[mask, 0], X[mask, 1], "oC0", mew=0, alpha=0.5)
-#_ = plt.plot(
+plt.imshow(p.numpy().reshape(n_grid, n_grid), alpha=0.3, extent=[-3, 3, -3, 3], origin="lower")
+# plt.plot(X[mask, 0], X[mask, 1], "oC0", mew=0, alpha=0.5)
+# _ = plt.plot(
 #    X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5
-#)
+# )
 plt.show()
 plt.plot(X[mask, 0], X[mask, 1], "oC0", mew=0, alpha=0.5)
-_ = plt.plot(
-   X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5
-)
+_ = plt.plot(X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5)
 plt.show()
 
 # +
@@ -171,6 +163,3 @@ plt.legend()
 plt.xlabel("$\\theta$")
 plt.ylabel("ELBO")
 plt.show()
-
-
-

@@ -78,10 +78,7 @@ class t_VGP(GPModel):
         sW = tf.sqrt(tf.abs(self.lambda_2))
 
         # Computes conversion λ₁, λ₂ → m, V by using q(f) ≃ t(f)p(f)
-        K = (
-            self.kernel(x_data)
-            + tf.eye(self.num_data, dtype=default_float()) * default_jitter()
-        )
+        K = self.kernel(x_data) + tf.eye(self.num_data, dtype=default_float()) * default_jitter()
         # L = chol(I  + √λ₂ᵀ K √λ₂ᵀ)
         L = tf.linalg.cholesky(
             tf.eye(self.num_data, dtype=tf.float64) + (sW @ tf.transpose(sW)) * K
@@ -106,9 +103,7 @@ class t_VGP(GPModel):
         E_q_log_lik = tf.reduce_sum(
             self.likelihood.variational_expectations(post_m, post_v, y_data)
         )
-        E_q_log_t = -tf.reduce_sum(
-            0.5 * (self.lambda_2) * ((pseudo_y - post_m) ** 2 + post_v)
-        )
+        E_q_log_t = -tf.reduce_sum(0.5 * (self.lambda_2) * ((pseudo_y - post_m) ** 2 + post_v))
         log_Z = -tf.transpose(pseudo_y) @ alpha / 2.0 - tf.reduce_sum(
             tf.math.log(tf.linalg.diag_part(L))
         )
@@ -132,10 +127,7 @@ class t_VGP(GPModel):
         sW = tf.sqrt(tf.abs(self.lambda_2))
 
         # Computes conversion λ₁, λ₂ → m, V by using q(f) ≃ t(f)p(f)
-        K = (
-            self.kernel(x_data)
-            + tf.eye(self.num_data, dtype=default_float()) * default_jitter()
-        )
+        K = self.kernel(x_data) + tf.eye(self.num_data, dtype=default_float()) * default_jitter()
         L = tf.linalg.cholesky(
             tf.eye(self.num_data, dtype=tf.float64) + (sW @ tf.transpose(sW)) * K
         )
@@ -160,9 +152,7 @@ class t_VGP(GPModel):
         del g
 
         # Take the tVGP step and transform to be ▽μ[Var_exp]
-        lambda_1 = (1.0 - beta) * self.lambda_1 + beta * (
-            d_exp_dm - 2.0 * (d_exp_dv * post_m)
-        )
+        lambda_1 = (1.0 - beta) * self.lambda_1 + beta * (d_exp_dm - 2.0 * (d_exp_dv * post_m))
         lambda_2 = (1.0 - beta) * self.lambda_2 + beta * (-2.0 * d_exp_dv)
 
         self.lambda_1.assign(lambda_1)
@@ -188,9 +178,7 @@ class t_VGP(GPModel):
         K = self.kernel(x_data)
 
         # Predictive mean
-        f_mean = tf.linalg.matmul(
-            Kx, self.q_alpha, transpose_a=True
-        ) + self.mean_function(Xnew)
+        f_mean = tf.linalg.matmul(Kx, self.q_alpha, transpose_a=True) + self.mean_function(Xnew)
 
         # Predictive var
         A = K + tf.linalg.diag(tf.transpose(1.0 / self.lambda_2))
@@ -200,7 +188,5 @@ class t_VGP(GPModel):
         if full_cov:
             f_var = self.kernel(Xnew) - tf.linalg.matmul(LiKx, LiKx, transpose_a=True)
         else:
-            f_var = self.kernel(Xnew, full_cov=False) - tf.reduce_sum(
-                tf.square(LiKx), 1
-            )
+            f_var = self.kernel(Xnew, full_cov=False) - tf.reduce_sum(tf.square(LiKx), 1)
         return f_mean, tf.transpose(f_var)

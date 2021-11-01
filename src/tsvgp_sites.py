@@ -73,11 +73,7 @@ class t_SVGP_sites(GPModel):
             Second order natural parameter of the variational site.
         """
 
-        lambda_1 = (
-            np.zeros((num_inducing, self.num_latent_gps))
-            if lambda_1 is None
-            else lambda_1
-        )
+        lambda_1 = np.zeros((num_inducing, self.num_latent_gps)) if lambda_1 is None else lambda_1
         if lambda_2 is None:
             lambda_2 = (
                 np.ones((num_inducing, self.num_latent_gps)) * 1e-6
@@ -112,9 +108,7 @@ class t_SVGP_sites(GPModel):
             self.inducing_variable, self.kernel, jitter=default_jitter()
         )  # [P, M, M] or [M, M]
         K_uf = Kuf(self.inducing_variable, self.kernel, X)  # [P, M, M] or [M, M]
-        lambda_1, lambda_2 = project_diag_sites(
-            K_uf, self.lambda_1, self.lambda_2, cholesky=False
-        )
+        lambda_1, lambda_2 = project_diag_sites(K_uf, self.lambda_1, self.lambda_2, cholesky=False)
         return posterior_from_dense_site_white(K_uu, lambda_1, lambda_2)
 
     def natgrad_step(self, lr=0.1):
@@ -182,9 +176,7 @@ class t_SVGP_sites(GPModel):
 
         return tf.reduce_sum(var_exp) * scale - kl
 
-    def predict_f(
-        self, Xnew: InputData, full_cov=False, full_output_cov=False
-    ) -> MeanAndVariance:
+    def predict_f(self, Xnew: InputData, full_cov=False, full_output_cov=False) -> MeanAndVariance:
         q_mu, q_sqrt = self.get_mean_chol_cov_inducing_posterior()
         mu, var = conditional(
             Xnew,

@@ -22,18 +22,12 @@ def _setup():
     """Data, kernel and likelihood setup"""
 
     def func(x):
-        return (
-            np.sin(x * 3 * 3.14)
-            + 0.3 * np.cos(x * 9 * 3.14)
-            + 0.5 * np.sin(x * 7 * 3.14)
-        )
+        return np.sin(x * 3 * 3.14) + 0.3 * np.cos(x * 9 * 3.14) + 0.5 * np.sin(x * 7 * 3.14)
 
     input_points = rng.rand(NUM_DATA, 1) * 2 - 1  # X values
     observations = func(input_points) + 0.2 * rng.randn(NUM_DATA, 1)
 
-    kernel = gpflow.kernels.SquaredExponential(
-        lengthscales=LENGTH_SCALE, variance=VARIANCE
-    )
+    kernel = gpflow.kernels.SquaredExponential(lengthscales=LENGTH_SCALE, variance=VARIANCE)
     variance = tf.constant(NOISE_VARIANCE, dtype=tf.float64)
 
     return input_points, observations, kernel, variance
@@ -63,9 +57,7 @@ def _t_svgp_normal_vs_white_init():
 
 def test_init_elbo(t_svgp_normal_vs_white_init):
     data, t_svgp, t_svgp_white = t_svgp_normal_vs_white_init
-    np.testing.assert_almost_equal(
-        t_svgp.elbo(data), t_svgp_white.elbo(data), decimal=4
-    )
+    np.testing.assert_almost_equal(t_svgp.elbo(data), t_svgp_white.elbo(data), decimal=4)
 
 
 def test_init_predictions(t_svgp_normal_vs_white_init):
@@ -168,9 +160,7 @@ def test_t_svgp_elbo_optimal(t_svgp_gpr_optim_setup):
     """Test that the value of the ELBO at the optimum is the same as the GPR Log Likelihood."""
     t_svgp, gpr = t_svgp_gpr_optim_setup
     data = gpr.data
-    np.testing.assert_almost_equal(
-        t_svgp.elbo(data), gpr.log_marginal_likelihood(), decimal=4
-    )
+    np.testing.assert_almost_equal(t_svgp.elbo(data), gpr.log_marginal_likelihood(), decimal=4)
 
 
 def test_t_svgp_unchanged_at_optimum(t_svgp_gpr_optim_setup):
@@ -207,6 +197,7 @@ def test_t_svgp_minibatch_same_elbo(t_svgp_gpr_optim_setup):
     optim_elbo1 = t_svgp1.elbo((x_d.numpy()[0][:, None], y_d.numpy()[0][:, None]))
 
     np.testing.assert_almost_equal(optim_elbo2, optim_elbo1, decimal=4)
+
 
 # todo make broadcastable
 @pytest.mark.parametrize("num_latent_gps", [1])

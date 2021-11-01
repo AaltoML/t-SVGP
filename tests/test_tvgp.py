@@ -73,10 +73,7 @@ def _tvgp_qvgp_optim_setup():
     natgrad_opt = NaturalGradient(gamma=1.0)
     variational_params = [(qvgp.q_mu, qvgp.q_sqrt)]
     training_loss = qvgp.training_loss_closure()
-    [
-        natgrad_opt.minimize(training_loss, var_list=variational_params)
-        for _ in range(natgrad_rep)
-    ]
+    [natgrad_opt.minimize(training_loss, var_list=variational_params) for _ in range(natgrad_rep)]
 
     return tvgp, qvgp
 
@@ -85,18 +82,12 @@ def _setup():
     """Data, kernel and likelihood setup"""
 
     def func(x):
-        return (
-            np.sin(x * 3 * 3.14)
-            + 0.3 * np.cos(x * 9 * 3.14)
-            + 0.5 * np.sin(x * 7 * 3.14)
-        )
+        return np.sin(x * 3 * 3.14) + 0.3 * np.cos(x * 9 * 3.14) + 0.5 * np.sin(x * 7 * 3.14)
 
     input_points = rng.rand(NUM_DATA, 1) * 2 - 1  # X values
     observations = func(input_points) + 0.2 * rng.randn(NUM_DATA, 1)
 
-    kernel = gpflow.kernels.SquaredExponential(
-        lengthscales=LENGTH_SCALE, variance=VARIANCE
-    )
+    kernel = gpflow.kernels.SquaredExponential(lengthscales=LENGTH_SCALE, variance=VARIANCE)
     variance = tf.constant(NOISE_VARIANCE, dtype=tf.float64)
 
     return input_points, observations, kernel, variance

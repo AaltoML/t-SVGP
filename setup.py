@@ -10,7 +10,6 @@ extra_requirements = {
         "matplotlib",
         "tqdm",
         "sklearn",
-        'jupytex',
     ),
 }
 

@@ -4,5 +4,6 @@
 *.idea*
 *ipynb_checkpoints*
 *.ipynb
+*.coverage
 *egg*
 *__pycache__*

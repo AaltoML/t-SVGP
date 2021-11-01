@@ -45,9 +45,7 @@ class DenseSites(Sites):
     Sites with dense lambda_2 save as a Cholesky factor
     """
 
-    def __init__(
-        self, lambda_1, lambda_2_sqrt=None, lambda_2=None, name: Optional[str] = None
-    ):
+    def __init__(self, lambda_1, lambda_2_sqrt=None, lambda_2=None, name: Optional[str] = None):
         """
         :param lambda_1: first order natural parameter
         :param lambda_2_sqrt: second order natural parameter
@@ -62,9 +60,7 @@ class DenseSites(Sites):
 
         if lambda_2_sqrt is not None:
             self.factor = True
-            self._lambda_2_sqrt = Parameter(
-                lambda_2_sqrt, transform=triangular()
-            )  # [L|P, M, M]
+            self._lambda_2_sqrt = Parameter(lambda_2_sqrt, transform=triangular())  # [L|P, M, M]
         else:
             self._lambda_2 = Parameter(lambda_2)  # [L|P, M, M]
             self.factor = False

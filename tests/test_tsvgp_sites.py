@@ -79,10 +79,7 @@ def _tsvgp_qsvgp_optim_setup():
     natgrad_opt = NaturalGradient(gamma=lr)
     variational_params = [(qsvgp.q_mu, qsvgp.q_sqrt)]
     training_loss = qsvgp.training_loss_closure(input_data)
-    [
-        natgrad_opt.minimize(training_loss, var_list=variational_params)
-        for _ in range(natgrad_rep)
-    ]
+    [natgrad_opt.minimize(training_loss, var_list=variational_params) for _ in range(natgrad_rep)]
 
     return tsvgp, qsvgp, input_data
 
@@ -91,18 +88,12 @@ def _setup():
     """Data, kernel and likelihood setup"""
 
     def func(x):
-        return (
-            np.sin(x * 3 * 3.14)
-            + 0.3 * np.cos(x * 9 * 3.14)
-            + 0.5 * np.sin(x * 7 * 3.14)
-        )
+        return np.sin(x * 3 * 3.14) + 0.3 * np.cos(x * 9 * 3.14) + 0.5 * np.sin(x * 7 * 3.14)
 
     input_points = rng.rand(NUM_DATA, 1) * 2 - 1  # X values
     observations = func(input_points) + 0.2 * rng.randn(NUM_DATA, 1)
 
-    kernel = gpflow.kernels.SquaredExponential(
-        lengthscales=LENGTH_SCALE, variance=VARIANCE
-    )
+    kernel = gpflow.kernels.SquaredExponential(lengthscales=LENGTH_SCALE, variance=VARIANCE)
     variance = tf.constant(NOISE_VARIANCE, dtype=tf.float64)
 
     return input_points, observations, kernel, variance
@@ -111,9 +102,7 @@ def _setup():
 def test_tsvgp_elbo_optimal(tsvgp_gpr_optim_setup):
     """Test that the value of the ELBO at the optimum is the same as the GPR Log Likelihood."""
     tsvgp, gpr = tsvgp_gpr_optim_setup
-    np.testing.assert_almost_equal(
-        tsvgp.elbo(), gpr.log_marginal_likelihood(), decimal=4
-    )
+    np.testing.assert_almost_equal(tsvgp.elbo(), gpr.log_marginal_likelihood(), decimal=4)
 
 
 def test_tsvgp_unchanged_at_optimum(tsvgp_gpr_optim_setup):

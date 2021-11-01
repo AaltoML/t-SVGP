@@ -82,8 +82,7 @@ def conditional_from_precision_sites_white(
     tmp2 = tf.linalg.triangular_solve(LA, Kuf)
 
     cov = Kff - tf.linalg.matrix_transpose(
-        tf.reduce_sum(tf.square(tmp2), axis=-2)
-        - tf.reduce_sum(tf.square(tmp1), axis=-2)
+        tf.reduce_sum(tf.square(tmp2), axis=-2) - tf.reduce_sum(tf.square(tmp1), axis=-2)
     )
     mean = tf.matmul(Kuf, tf.linalg.cholesky_solve(LR, l), transpose_a=True)[0]
     return mean, cov
@@ -165,26 +164,24 @@ def conditional_from_precision_sites(
         L = tf.linalg.cholesky(L2)
 
     m = Kuu.shape[-1]
-    I = tf.eye(m, dtype=default_float())
+    Id = tf.eye(m, dtype=default_float())
     C = tf.linalg.cholesky(Kuu)
 
     # W = I + Lₜᵀ Lₚ Lₚᵀ Lₜ, chol(W)
     CtL = tf.matmul(C, L, transpose_a=True)
-    W = I + tf.matmul(CtL, CtL, transpose_a=True)
+    W = Id + tf.matmul(CtL, CtL, transpose_a=True)
     chol_W = tf.linalg.cholesky(W)
 
     D = tf.linalg.triangular_solve(chol_W, tf.linalg.matrix_transpose(L))
     tmp = tf.matmul(D, Kuf)
 
-    mean = tf.matmul(Kuf, l, transpose_a=True) -\
-        tf.linalg.matrix_transpose(
-            tf.reduce_sum(
-                tf.matmul(D, tf.matmul(Kuu, tf.linalg.matrix_transpose(l)[..., None])) * tmp, axis=-2)
+    mean = tf.matmul(Kuf, l, transpose_a=True) - tf.linalg.matrix_transpose(
+        tf.reduce_sum(
+            tf.matmul(D, tf.matmul(Kuu, tf.linalg.matrix_transpose(l)[..., None])) * tmp, axis=-2
         )
-
-    cov = Kff - tf.linalg.matrix_transpose(
-        tf.reduce_sum(tf.square(tmp), axis=-2)
     )
+
+    cov = Kff - tf.linalg.matrix_transpose(tf.reduce_sum(tf.square(tmp), axis=-2))
     return mean, cov
 
 
@@ -278,9 +275,9 @@ def kl_from_precision_sites_white(A, l, L=None, L2=None):
     LA = tf.linalg.cholesky(A)
 
     # log det term
-    log_det = tf.reduce_sum(
-        tf.math.log(tf.square(tf.linalg.diag_part(LR)))
-    ) - tf.reduce_sum(tf.math.log(tf.square(tf.linalg.diag_part(LA))))
+    log_det = tf.reduce_sum(tf.math.log(tf.square(tf.linalg.diag_part(LR)))) - tf.reduce_sum(
+        tf.math.log(tf.square(tf.linalg.diag_part(LA)))
+    )
 
     # trace term
     tmp = tf.linalg.triangular_solve(LR, LA)
@@ -292,7 +289,6 @@ def kl_from_precision_sites_white(A, l, L=None, L2=None):
     )
 
     return 0.5 * (log_det + trace_plus_const + mahalanobis)
-
 
 
 def kl_from_precision_sites(A, l, L=None, L2=None):
@@ -334,9 +330,9 @@ def kl_from_precision_sites(A, l, L=None, L2=None):
     LA = tf.linalg.cholesky(A)
 
     # log det term
-    log_det = tf.reduce_sum(
-        tf.math.log(tf.square(tf.linalg.diag_part(LR)))
-    ) - tf.reduce_sum(tf.math.log(tf.square(tf.linalg.diag_part(LA))))
+    log_det = tf.reduce_sum(tf.math.log(tf.square(tf.linalg.diag_part(LR)))) - tf.reduce_sum(
+        tf.math.log(tf.square(tf.linalg.diag_part(LA)))
+    )
 
     # trace term
     tmp = tf.linalg.triangular_solve(LR, LA)
@@ -348,7 +344,6 @@ def kl_from_precision_sites(A, l, L=None, L2=None):
     )
 
     return 0.5 * (log_det + trace_plus_const + mahalanobis)
-
 
 
 def posterior_from_dense_site(K, lambda_1, lambda_2_sqrt):
@@ -370,11 +365,7 @@ def posterior_from_dense_site(K, lambda_1, lambda_2_sqrt):
     m: M x P
     chol_S: P x M x M
     """
-    shape_constraints = [
-        (K, ["M", "M"]),
-        (lambda_1, ["N", "L"]),
-        (lambda_2_sqrt, ["L", "M", "M"])
-    ]
+    shape_constraints = [(K, ["M", "M"]), (lambda_1, ["N", "L"]), (lambda_2_sqrt, ["L", "M", "M"])]
     tf.debugging.assert_shapes(
         shape_constraints,
         message="posterior_from_dense_site() arguments ",
@@ -382,12 +373,12 @@ def posterior_from_dense_site(K, lambda_1, lambda_2_sqrt):
 
     L = lambda_2_sqrt  # L - likelihood precision square root
     m = K.shape[-1]
-    I = tf.eye(m, dtype=default_float())
+    Id = tf.eye(m, dtype=default_float())
     C = tf.linalg.cholesky(K)
 
     # W = I + Lₜᵀ Lₚ Lₚᵀ Lₜ, chol(W)
     CtL = tf.matmul(C, L, transpose_a=True)
-    W = I + tf.matmul(CtL, CtL, transpose_a=True)
+    W = Id + tf.matmul(CtL, CtL, transpose_a=True)
     chol_W = tf.linalg.cholesky(W)
 
     # S_q = K - K W⁻¹K = K - [Lw⁻¹ K]ᵀ[Lw⁻¹ K]
@@ -418,20 +409,16 @@ def posterior_from_dense_site_white(K, lambda_1, lambda_2, jitter=1e-9):
     chol_S: P x M x M
     """
 
-    shape_constraints = [
-        (K, ["M", "M"]),
-        (lambda_1, ["N", "L"]),
-        (lambda_2, ["L", "M", "M"])
-    ]
+    shape_constraints = [(K, ["M", "M"]), (lambda_1, ["N", "L"]), (lambda_2, ["L", "M", "M"])]
     tf.debugging.assert_shapes(
         shape_constraints,
         message="posterior_from_dense_site_white() arguments ",
     )
     P = lambda_2  # L - likelihood precision square root
     m = K.shape[-1]
-    I = tf.eye(m, dtype=tf.float64)
+    Id = tf.eye(m, dtype=tf.float64)
     R = K + P
-    LR = tf.linalg.cholesky(R + I * jitter)
+    LR = tf.linalg.cholesky(R + Id * jitter)
     iLRK = tf.linalg.triangular_solve(LR, K)
     S_q = tf.matmul(iLRK, iLRK, transpose_a=True)
     chol_S_q = tf.linalg.cholesky(S_q)

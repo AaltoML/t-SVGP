@@ -74,11 +74,7 @@ class t_SVGP_white(GPModel):
             Second order natural parameter of the variational site.
         """
 
-        lambda_1 = (
-            np.zeros((num_inducing, self.num_latent_gps))
-            if lambda_1 is None
-            else lambda_1
-        )
+        lambda_1 = np.zeros((num_inducing, self.num_latent_gps)) if lambda_1 is None else lambda_1
 
         if lambda_2 is None:
             lambda_2 = [
@@ -118,9 +114,7 @@ class t_SVGP_white(GPModel):
         )  # [P, M, M] or [M, M]
         return kl_from_precision_sites_white(K_uu, self.lambda_1, L2=self.lambda_2)
 
-    def predict_f(
-        self, Xnew: InputData, full_cov=False, full_output_cov=False
-    ) -> MeanAndVariance:
+    def predict_f(self, Xnew: InputData, full_cov=False, full_output_cov=False) -> MeanAndVariance:
         K_uu = Kuu(
             self.inducing_variable, self.kernel, jitter=default_jitter()
         )  # [P, M, M] or [M, M]
@@ -129,9 +123,7 @@ class t_SVGP_white(GPModel):
         mu, var = conditional_from_precision_sites_white(
             K_uu, K_ff, K_uf, self.lambda_1, L2=self.lambda_2
         )
-        tf.debugging.assert_positive(
-            var
-        )  # We really should make the tests pass with this here
+        tf.debugging.assert_positive(var)  # We really should make the tests pass with this here
         return mu + self.mean_function(Xnew), var
 
     def elbo(self, data: RegressionData) -> tf.Tensor:
@@ -175,12 +167,12 @@ class t_SVGP_white(GPModel):
             ve = self.likelihood.variational_expectations(mean, var, Y)
         grads = g.gradient(ve, [mean, var])
 
-        I = tf.eye(self.num_inducing, dtype=tf.float64)
+        Id = tf.eye(self.num_inducing, dtype=tf.float64)
 
         # Compute the projection matrix A from prior information
         K_uu = Kuu(self.inducing_variable, self.kernel)
         K_uf = Kuf(self.inducing_variable, self.kernel, X)  # [P, M, M] or [M, M]
-        chol_Kuu = tf.linalg.cholesky(K_uu + I * jitter)
+        chol_Kuu = tf.linalg.cholesky(K_uu + Id * jitter)
         A = tf.transpose(tf.linalg.cholesky_solve(chol_Kuu, K_uf))
 
         if self.num_latent_gps == 1:

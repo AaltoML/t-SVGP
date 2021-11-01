@@ -1,0 +1,27 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  check-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+          python-version: [3.7]
+          tensorflow: ["~=2.5.0"]
+    name: Python-${{ matrix.python-version }} tensorflow${{ matrix.tensorflow }}
+    env:
+      VERSION_TF: ${{ matrix.tensorflow }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('notebook_requirements.txt') }}-${{ hashFiles('tests_requirements.txt') }}
+    - name: Install dependencies
+      run: make install
+    - name: Run tests
+      run: make test
