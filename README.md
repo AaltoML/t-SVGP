@@ -56,7 +56,7 @@ If you use the code in this repository for your research, please cite the paper 
 
 ## Contributing
 
-For all correspondence, please contact [vincenta@gatsby.ucl.ac.uk](vincenta@gatsby.ucl.ac.uk).
+For all correspondence, please contact [vincenta@gatsby.ucl.ac.uk](mailto:vincenta@gatsby.ucl.ac.uk).
 
 ## License
 
