@@ -21,6 +21,7 @@ install:  ## Install repo for developement
 		-e .
 
 
+
 format: ## Formats code with `black` and `isort`
 	@echo "\n=== isort =============================================="
 	isort .
