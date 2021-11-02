@@ -21,6 +21,7 @@ tf.random.set_seed(42)
 ## Loading motorcycle accident data
 """
 
+# %%
 csv_data = np.loadtxt("data/mcycle.csv", delimiter=",", skiprows=1)
 X = csv_data[:, 0].reshape(-1, 1)
 Y = csv_data[:, 1].reshape(-1, 1)
@@ -122,6 +123,8 @@ def M_step():
 """
 ## Run Optimization
 """
+
+# %%
 
 nrep = 100
 for r in range(nrep):

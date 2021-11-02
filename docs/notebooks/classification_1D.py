@@ -1,18 +1,3 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: light
-#       format_version: '1.5'
-#       jupytext_version: 1.13.0
-#   kernelspec:
-#     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
-# ---
-
-
 # %% [markdown]
 """
 # 2D Classification
@@ -39,6 +24,7 @@ tf.random.set_seed(42)
 ## Generating toy data for classification
 """
 
+# %%
 # Simulate data
 func = lambda x: np.sin(12 * x) / x
 N = 100  # Number of training observations
@@ -122,8 +108,11 @@ print("q-SVGP (white) elbo:", -training_loss_white().numpy())
 
 elbo = m_t.elbo(data).numpy()
 
-print("Computing elbos for new parameter grid")
 
+# %% [markdown]
+"""
+## Computing elbos for new parameter grid
+"""
 
 # %%
 
