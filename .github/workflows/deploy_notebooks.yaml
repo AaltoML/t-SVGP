@@ -16,7 +16,7 @@ jobs:
     - run: |
         pip install --upgrade pip
         make install
-	    jupytext --to notebook notebooks/*.py
+	jupytext --to notebook notebooks/*.py
         rm notebooks/*.py
     - run: |
         git add .
