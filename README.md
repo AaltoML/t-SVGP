@@ -1,6 +1,7 @@
 # Dual Parameterization of Sparse Variational Gaussian Processes
 
 [![Quality checks and Tests](https://github.com/AaltoML/t-SVGP/actions/workflows/quality-check.yaml/badge.svg)](https://github.com/AaltoML/t-SVGP/actions/workflows/quality-check.yaml)
+[![Docs build](https://github.com/AaltoML/t-SVGP/actions/workflows/deploy_notebooks.yaml/badge.svg)](https://github.com/AaltoML/t-SVGP/actions/workflows/deploy_notebooks.yaml)
 
 [Documentation](https://aaltoml.github.io/t-SVGP/) |
 [Notebooks](https://aaltoml.github.io/t-SVGP/notebooks.html) |
