@@ -43,7 +43,7 @@ extensions = [
 
 ### Automatic API doc generation
 extensions.append("autoapi.extension")
-autoapi_dirs = ["../t-SVGP"]
+autoapi_dirs = ["../src"]
 autoapi_add_toctree_entry = False
 autoapi_python_class_content = "both"
 autoapi_options = [
