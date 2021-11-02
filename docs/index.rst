@@ -22,10 +22,13 @@ Installation
 
 
 We recommend using Python version 3.7.3 and pip version 20.1.1.
+
+
 To install the package, run:
 
 .. code::
-    pip install -e .
+
+   $ pip install gpflux
 
 
 Contributing
