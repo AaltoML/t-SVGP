@@ -16,10 +16,10 @@ jobs:
     - run: |
         pip install --upgrade pip
         make install
-        jupytext --to notebook notebooks/*.py
+        jupytext --to notebook --execute notebooks/*.py
         rm notebooks/*.py
     - run: |
-        git add .
+        git add notebooks/*.ipynb
         git config --global user.email "none"
         git config --global user.name "github-actions-bot"
         git commit -m "build notebooks"
