@@ -7,11 +7,13 @@ Notebooks
 
    notebooks/classification_1D
 
+
 .. toctree::
    :caption: Classification 2D
    :maxdepth: 1
 
    notebooks/classification_2D
+
 
 .. toctree::
    :caption: Heteroskedastic Regression
