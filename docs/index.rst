@@ -28,7 +28,7 @@ To install the package, run:
 
 .. code::
 
-   $ pip install gpflux
+   $ pip install -e .
 
 
 Contributing
