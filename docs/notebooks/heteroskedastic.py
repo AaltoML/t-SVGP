@@ -1,3 +1,10 @@
+# %% [markdown]
+"""
+# Heteroskedastic Regression
+"""
+
+# %%
+
 import gpflow as gpf
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,7 +16,10 @@ from src.tsvgp import t_SVGP
 rng = np.random.RandomState(123)
 tf.random.set_seed(42)
 
-# # Loading motorcycle accident data
+# %% [markdown]
+"""
+## Loading motorcycle accident data
+"""
 
 csv_data = np.loadtxt("data/mcycle.csv", delimiter=",", skiprows=1)
 X = csv_data[:, 0].reshape(-1, 1)
@@ -21,9 +31,14 @@ plt.figure()
 plt.plot(X, Y, "*")
 plt.show()
 
-# # Declaring heteroskedastic regression model
+# %% [markdown]
+"""
+## Declaring heteroskedastic regression model
+"""
 
-# +
+
+# %%
+
 likelihood = gpf.likelihoods.HeteroskedasticTFPConditional(
     distribution_class=tfp.distributions.Normal,  # Gaussian Likelihood
     scale_transform=tfp.bijectors.Exp(),  # Exponential Transform
@@ -45,11 +60,13 @@ inducing_variable = gpf.inducing_variables.SharedIndependentInducingVariables(
 m_tsvgp = t_SVGP(kernel, likelihood, inducing_variable, num_data=N, num_latent_gps=2)
 
 
-# -
 
-# # Plot pre-training (a priori) prediction
+# %% [markdown]
+"""
+## Plot pre-training (a priori) prediction
+"""
 
-# +
+# %%
 def plot_distribution(X, Y, loc, scale, index=0):
     plt.figure(figsize=(15, 5))
     x = X.squeeze()
@@ -69,12 +86,15 @@ Ymean, Yvar = m_tsvgp.predict_y(X)
 Ymean = Ymean.numpy().squeeze()
 Ystd = tf.sqrt(Yvar).numpy().squeeze()
 plot_distribution(X, Y, Ymean, Ystd, -1)
-# -
-
-# # Training model
 
 
-# +
+# %% [markdown]
+"""
+## Training model
+"""
+
+
+# %%
 lr_adam = 0.1
 lr_natgrad = 0.5
 
@@ -97,9 +117,11 @@ def M_step():
     ]
 
 
-# -
 
-# # Run Optimization
+# %% [markdown]
+"""
+## Run Optimization
+"""
 
 nrep = 100
 for r in range(nrep):

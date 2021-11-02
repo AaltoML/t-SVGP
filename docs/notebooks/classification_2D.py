@@ -12,7 +12,12 @@
 #     name: python3
 # ---
 
-# +
+# %% [markdown]
+"""
+# 2D Classification
+"""
+
+# %%
 import gpflow
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,7 +28,12 @@ from tqdm import tqdm
 
 from src.tsvgp import t_SVGP
 
-# +
+# %% [markdown]
+"""
+## Loading banana dataset
+"""
+
+# %%
 X = np.loadtxt("data/banana_X_train", delimiter=",")
 Y = np.loadtxt("data/banana_Y_train", delimiter=",").reshape(-1, 1)
 mask = Y[:, 0] == 1
@@ -36,7 +46,11 @@ _ = plt.plot(X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=
 plt.show()
 
 
-# +
+# %% [markdown]
+"""
+## Declaring classification model
+"""
+# %%
 M = 100  # Number of inducing locations
 Z = X[:M, :]
 
@@ -72,7 +86,11 @@ set_trainable(m_q.kernel.lengthscales, False)
 set_trainable(m_t.kernel.lengthscales, False)
 
 
-# +
+# %% [markdown]
+"""
+## Training model
+"""
+# %%
 lr_natgrad = 0.8
 nit = 10
 
@@ -98,7 +116,7 @@ print("q-SVGP (white) elbo:", -training_loss_white().numpy())
 
 elbo = m_t.elbo(data).numpy()
 
-# -
+# %%
 
 n_grid = 40
 x_grid = np.linspace(-3, 3, n_grid)
@@ -115,7 +133,7 @@ plt.plot(X[mask, 0], X[mask, 1], "oC0", mew=0, alpha=0.5)
 _ = plt.plot(X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], "oC1", mew=0, alpha=0.5)
 plt.show()
 
-# +
+# %%
 
 print("Computing elbos for new parameter grid")
 
@@ -138,7 +156,7 @@ for i, v in enumerate(tqdm(vars_gp)):
 print("done.")
 
 
-# -
+# %%
 
 plt.figure()
 plt.plot(vars_gp, llh_scvi, label="t-SVGP", linewidth=4)

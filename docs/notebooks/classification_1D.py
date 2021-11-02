@@ -12,7 +12,13 @@
 #     name: python3
 # ---
 
-# +
+
+# %% [markdown]
+"""
+# 2D Classification
+"""
+
+# %%
 import gpflow
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,10 +29,15 @@ from tqdm import tqdm
 
 from src.tsvgp import t_SVGP
 
-# +
+# %%
 # For reproducibility
 rng = np.random.RandomState(123)
 tf.random.set_seed(42)
+
+# %% [markdown]
+"""
+## Generating toy data for classification
+"""
 
 # Simulate data
 func = lambda x: np.sin(12 * x) / x
@@ -43,7 +54,11 @@ x_grid = np.linspace(-1, 1, 100)
 plt.plot(x_grid, func(x_grid))
 plt.plot(X, Y, "o")
 
-# +
+# %% [markdown]
+"""
+## Declaring classification model
+"""
+# %%
 # =============================================== Set up models
 M = 10  # Number of inducing locations
 Z = np.linspace(X.min(), X.max(), M).reshape(-1, 1)
@@ -76,6 +91,11 @@ set_trainable(m_q.kernel.lengthscales, False)
 set_trainable(m_t.kernel.lengthscales, False)
 
 
+# %% [markdown]
+"""
+## Training model
+"""
+# %%
 # =============================================== run inference
 lr_natgrad = 0.8
 nit = 20
@@ -105,7 +125,7 @@ elbo = m_t.elbo(data).numpy()
 print("Computing elbos for new parameter grid")
 
 
-# +
+# %%
 
 # ======================================== ELBO for different theta
 N_grid = 100
@@ -125,7 +145,7 @@ for i, v in enumerate(tqdm(vars_gp)):
 print("done.")
 
 
-# +
+# %%
 
 # ======================================== Visualize
 plt.figure()
