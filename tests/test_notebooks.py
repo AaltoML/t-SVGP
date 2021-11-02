@@ -12,7 +12,7 @@ from nbconvert.preprocessors.execute import CellExecutionError
 
 def _nbpath():
     this_dir = os.path.dirname(__file__)
-    return os.path.join(this_dir, "../notebooks/")
+    return os.path.join(this_dir, "../docs/notebooks/")
 
 
 def test_notebook_dir_exists():

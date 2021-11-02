@@ -16,12 +16,16 @@ jobs:
     - run: |
         pip install --upgrade pip
         make install
-        ipython kernel install --name=python3.7 --user
-        jupytext --to notebook --execute notebooks/*.py
-        rm notebooks/*.py
+        make docs
     - run: |
-        git add -f notebooks/*.ipynb
+        TMP_DIR=$(mktemp -d -p $(pwd))
+        mv docs/_build/html/* $TMP_DIR
+        rm -rf docs
+        mv $TMP_DIR docs
+        touch docs/.nojekyll
+    - run: |
+        git add .
         git config --global user.email "none"
         git config --global user.name "github-actions-bot"
-        git commit -m "build notebooks"
+        git commit -m "build documentation"
         git push -f origin HEAD:gh-pages
