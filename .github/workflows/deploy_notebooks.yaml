@@ -20,7 +20,7 @@ jobs:
         jupytext --to notebook --execute notebooks/*.py
         rm notebooks/*.py
     - run: |
-        git add notebooks/*.ipynb
+        git add -f notebooks/*.ipynb
         git config --global user.email "none"
         git config --global user.name "github-actions-bot"
         git commit -m "build notebooks"
