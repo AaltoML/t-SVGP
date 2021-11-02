@@ -16,6 +16,7 @@ jobs:
     - run: |
         pip install --upgrade pip
         make install
+        ipython kernel install --name=python3.7 --user
         jupytext --to notebook --execute notebooks/*.py
         rm notebooks/*.py
     - run: |
