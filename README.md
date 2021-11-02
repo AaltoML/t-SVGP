@@ -1,6 +1,13 @@
+# Dual Parameterization of Sparse Variational Gaussian Processes
+
 [![Quality checks and Tests](https://github.com/AaltoML/t-SVGP/actions/workflows/quality-check.yaml/badge.svg)](https://github.com/AaltoML/t-SVGP/actions/workflows/quality-check.yaml)
 
-# Dual Parameterization of Sparse Variational Gaussian Processes
+[Documentation](https://aaltoml.github.io/t-SVGP/) |
+[Notebooks](https://aaltoml.github.io/t-SVGP/notebooks.html) |
+[API reference](https://aaltoml.github.io/t-SVGP/autoapi/src/index.html)
+
+## Introduction
+
 
 This repository is the official implementation of the methods in the publication:
 
@@ -9,12 +16,13 @@ This repository is the official implementation of the methods in the publication
 
 The paper's main result shows that an alternative (dual) parameterization for SVGP models leads to a better objective for learning and allows for faster inference via natural gradient descent.
 
-## Supplemental material
-Structure of the supplemental material folder:
+## Repository structure
+
+The repository has the following folder structure:
 
 * `scr` contains the source code
 * `demos` contains scripts to reproduce some of the experiments presented in the paper  
-* `notebooks` contains a Jupyter notebook in Python illustrating the proposed approach
+* `docs` contains documentation in the form of notebooks and an api reference.
 * `tests` contains unit and integration tests for the source code
 
 ## Installation
@@ -48,7 +56,7 @@ If you use the code in this repository for your research, please cite the paper 
 
 ## Contributing
 
-For all correspondence, please contact vincenta@gatsby.ucl.ac.uk.
+For all correspondence, please contact [vincenta@gatsby.ucl.ac.uk](vincenta@gatsby.ucl.ac.uk).
 
 ## License
 
