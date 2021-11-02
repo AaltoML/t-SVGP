@@ -9,6 +9,8 @@ TYPE_NAMES = $(SRC_NAME)
 SUCCESS='\033[0;32m'
 UNAME_S = $(shell uname -s)
 
+PANDOC_DEB = https://github.com/jgm/pandoc/releases/download/2.10.1/pandoc-2.10.1-1-amd64.deb
+
 LINT_FILE_IGNORES = "$(LIB_NAME)/$(SRC_NAME)/__init__.py:F401,F403"
 
 
