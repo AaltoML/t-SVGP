@@ -25,7 +25,7 @@ import numpy as np
 import tensorflow as tf
 import gpflow
 from gpflow.optimizers import NaturalGradient
-from src.tsvgp import t_SVGP
+from src.models.tsvgp import t_SVGP
 import logging
 import time
 from tqdm import tqdm
@@ -140,7 +140,7 @@ def train(model, iterations):
     :param iterations: number of iterations
     """
 
-    print("Optimizing model")
+    print("Optimizing model: ", model.name)
 
     natgrad_opt = NaturalGradient(gamma=nat_lr)
 
@@ -180,7 +180,7 @@ def train(model, iterations):
             for j in range(n_m_steps):
                 optimization_m_step(training_loss2, model.trainable_variables)
     
-        elif model.name == 'svgp_cvi':
+        elif model.name == 't_svgp':
             for i in range(n_e_steps):
                 optimization_e_step(model, data)
             for i in range(n_m_steps):
