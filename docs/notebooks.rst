@@ -20,3 +20,9 @@ Notebooks
    :maxdepth: 1
 
    notebooks/heteroskedastic
+   
+.. toctree::
+   :caption: MNIST Classification
+   :maxdepth: 1
+
+   notebooks/mnist
