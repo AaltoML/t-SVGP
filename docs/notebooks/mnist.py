@@ -25,7 +25,7 @@ import numpy as np
 import tensorflow as tf
 import gpflow
 from gpflow.optimizers import NaturalGradient
-from src.cvi_svgp import SVGP_CVI
+from src.tsvgp import t_SVGP
 import logging
 import time
 from tqdm import tqdm
@@ -112,7 +112,7 @@ models.append(m)
 names.append('q-SVGP')
 
 # Set up the t-SVGP model
-m = SVGP_CVI(
+m = t_SVGP(
         kernel=gpflow.kernels.Matern52(lengthscales=np.ones((1, X.shape[1]))*ell, variance=var),
         likelihood=gpflow.likelihoods.Softmax(C),
         inducing_variable=Z.copy(),
