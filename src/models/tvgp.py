@@ -11,7 +11,7 @@ from gpflow.likelihoods import Likelihood
 from gpflow.mean_functions import MeanFunction
 from gpflow.models.model import GPModel, InputData, MeanAndVariance, RegressionData
 
-from .sites import DiagSites
+from src.sites import DiagSites
 
 
 class t_VGP(GPModel):

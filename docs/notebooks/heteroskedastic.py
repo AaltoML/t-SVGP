@@ -26,7 +26,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from src.tsvgp import t_SVGP
+from src.models.tsvgp import t_SVGP
 
 rng = np.random.RandomState(123)
 tf.random.set_seed(42)

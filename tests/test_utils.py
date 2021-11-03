@@ -118,7 +118,7 @@ def test_kl_from_precision_sites():
     np.testing.assert_almost_equal(KL, KL_gpflow)
 
 
-from src.tsvgp import posterior_from_dense_site
+from src.models.tsvgp import posterior_from_dense_site
 
 
 def test_posteriors_from_dense_sites():

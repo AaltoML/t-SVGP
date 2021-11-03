@@ -6,8 +6,8 @@ import tensorflow as tf
 from gpflow.likelihoods import Bernoulli, Gaussian
 from gpflow.optimizers import NaturalGradient
 
-from src.tsvgp import t_SVGP
-from src.tsvgp_white import t_SVGP_white
+from src.models.tsvgp import t_SVGP
+from src.models.tsvgp_white import t_SVGP_white
 
 LENGTH_SCALE = 2.0
 VARIANCE = 2.25

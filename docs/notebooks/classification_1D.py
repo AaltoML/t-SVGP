@@ -27,7 +27,7 @@ from gpflow import set_trainable
 from gpflow.optimizers import NaturalGradient
 from tqdm import tqdm
 
-from src.tsvgp import t_SVGP
+from src.models.tsvgp import t_SVGP
 
 # %%
 # For reproducibility

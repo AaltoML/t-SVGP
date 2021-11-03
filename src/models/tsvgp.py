@@ -21,8 +21,8 @@ from gpflow.models.model import GPModel, InputData, MeanAndVariance, RegressionD
 from gpflow.models.training_mixins import ExternalDataTrainingLossMixin
 from gpflow.models.util import inducingpoint_wrapper
 
-from .sites import DenseSites
-from .util import (
+from src.sites import DenseSites
+from src.util import (
     conditional_from_precision_sites,
     gradient_transformation_mean_var_to_expectation,
     posterior_from_dense_site,
