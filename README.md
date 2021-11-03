@@ -9,11 +9,9 @@
 
 ## Introduction
 
-
 This repository is the official implementation of the methods in the publication:
 
-* V. Adam, P.E. Chang, M.E. Khan and A. Solin (2021). **Dual Parameterization of Sparse Variational Gaussian Processes**. *To appear at Advances in Neural Information Processing Systems (NeurIPS)*. [[arXiv]](https://arxiv.org/abs/XXXX.XXXX)
-
+* V. Adam, P.E. Chang, M.E. Khan, and A. Solin (2021). **Dual Parameterization of Sparse Variational Gaussian Processes**. In *Advances in Neural Information Processing Systems (NeurIPS)*. [[arXiv]](https://arxiv.org/abs/XXXX.XXXX)
 
 The paper's main result shows that an alternative (dual) parameterization for SVGP models leads to a better objective for learning and allows for faster inference via natural gradient descent.
 
@@ -31,7 +29,7 @@ The repository has the following folder structure:
 We recommend using Python version 3.7.3 and pip version 20.1.1.
 To install the package, run:
 
-```
+```bash
 pip install -e .
 ```
 To install the dependencies needed to run `demos`, use `pip install -e .[demos]`.
@@ -39,18 +37,17 @@ To install the dependencies needed to run `demos`, use `pip install -e .[demos]`
 ### Notebooks
 
 To build the notebooks from source, run
-```
+```bash
 jupytext --to notebook [filename].py
 ```
-
 
 ## Citation
 If you use the code in this repository for your research, please cite the paper as follows:
 ```bibtex
-@inproceedings{adam2021,
-  title={Dual Parameterization of Sparse Variational Gaussian Processes},
+@inproceedings{adam2021dual,
+  title={Dual Parameterization of Sparse Variational {G}aussian Processes},
   author={Adam, Vincent and Chang, Paul Edmund and Khan, Mohammad Emtiyaz and Solin, Arno},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
   year={2021}
 }
 ```
