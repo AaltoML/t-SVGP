@@ -55,12 +55,13 @@ format: ## Formats code with `black` and `isort`
 
 
 test: ## Run unit and integration tests with pytest
-	pytest --cov=$(SRC_NAME) \
-	       --cov-report html:cover_html \
-	       --cov-config .coveragerc \
-	       --cov-report term \
-	       --cov-report xml \
-	       # --cov-fail-under=80 \ todo add back later
-	       --junitxml=reports/junit.xml \
-	       -v --tb=short --durations=10 \
+	pytest -v --tb=short --durations=10 \
 	       $(TESTS_NAME)
+	       # --cov=$(SRC_NAME) \
+	       # --cov-report html:cover_html \
+	       # --cov-config .coveragerc \
+	       # --cov-report term \
+	       # --cov-report xml \
+	       # --cov-fail-under=80 \ todo add back later
+	       # --junitxml=reports/junit.xml \
+	       
