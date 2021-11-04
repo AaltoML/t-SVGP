@@ -175,10 +175,7 @@ class t_SVGP_white(GPModel):
         chol_Kuu = tf.linalg.cholesky(K_uu + Id * jitter)
         A = tf.transpose(tf.linalg.cholesky_solve(chol_Kuu, K_uf))
 
-        if self.num_latent_gps == 1:
-            A = tf.tile(A[..., None], [1, 1, self.num_latent_gps])
-        else:
-            A = tf.tile(A[..., None], [1, 1, self.num_latent_gps])
+        A = tf.tile(A[..., None], [1, 1, self.num_latent_gps])
 
         grads = [
             tf.einsum("nml,nl->ml", A, grads[0]),

@@ -272,7 +272,7 @@ class t_SVGP(base_SVGP):
         # ▽μ₁[Var_exp] = aₙαₙ ,
         # ▽μ2[Var_exp] = λₙaₙaₙᵀ
 
-        if self.num_latent_gps != 1:
+        if tf.rank(A) == 2:
             A = tf.tile(A[..., None], [1, 1, self.num_latent_gps])
         grads = [
             tf.einsum("nml,nl->ml", A, grads[0]),
