@@ -31,6 +31,9 @@ import time
 from tqdm import tqdm
 tf.get_logger().setLevel(logging.ERROR)
 
+rng = np.random.RandomState(1)
+tf.random.set_seed(1)
+
 # %% [markdown]
 """
 ## Loading MNIST data
@@ -53,7 +56,7 @@ def load_mnist():
     yt = np.reshape(yt, (-1, 1))
     yt = np.int64(yt)
 
-    perm = np.random.permutation(x.shape[0])
+    perm = rng.permutation(x.shape[0])
     np.take(x, perm, axis=0, out=x)
     np.take(y, perm, axis=0, out=y)
 
@@ -69,8 +72,7 @@ adam_lr = 0.02  # Learning rate for M-step (hyperparams)
 n_e_steps = 1   # Number of E-steps per step
 n_m_steps = 1   # Number of M-steps per step
 
-rng = np.random.RandomState(1)
-tf.random.set_seed(1)
+
 
 # Initial hyperparameters
 ell = 1.0

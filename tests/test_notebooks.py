@@ -9,6 +9,9 @@ import pytest
 from nbconvert.preprocessors import ExecutePreprocessor
 from nbconvert.preprocessors.execute import CellExecutionError
 
+BLACKLISTED_NOTEBOOKS = [
+    "mnist.py"
+]
 
 def _nbpath():
     this_dir = os.path.dirname(__file__)
@@ -21,10 +24,16 @@ def test_notebook_dir_exists():
 
 def get_notebooks():
     """
-    Returns all notebooks in `_nbpath`
+    Returns all notebooks in `_nbpath` that are not blacklisted.
     """
+
+    def notebook_blacklisted(nb):
+        blacklisted_notebooks_basename = map(os.path.basename, BLACKLISTED_NOTEBOOKS)
+        return os.path.basename(nb) in blacklisted_notebooks_basename
+
+    # recursively traverse the notebook directory in search for ipython notebooks
     all_notebooks = glob.iglob(os.path.join(_nbpath(), "**", "*.py"), recursive=True)
-    notebooks_to_test = [nb for nb in all_notebooks]
+    notebooks_to_test = [nb for nb in all_notebooks if not notebook_blacklisted(nb)]
     return notebooks_to_test
 
 def _preproc():
