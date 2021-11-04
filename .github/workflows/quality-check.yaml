@@ -8,10 +8,7 @@ jobs:
     strategy:
       matrix:
           python-version: [3.7]
-          tensorflow: ["~=2.5.0"]
-    name: Python-${{ matrix.python-version }} tensorflow${{ matrix.tensorflow }}
-    env:
-      VERSION_TF: ${{ matrix.tensorflow }}
+    name: Python-${{ matrix.python-version }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
