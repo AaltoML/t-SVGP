@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 requirements = (
-    "gpflow>=2.1.3",
+    "gpflow==2.2.1",
     "pytest",
 )
 
