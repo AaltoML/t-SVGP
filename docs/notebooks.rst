@@ -1,6 +1,14 @@
 Notebooks
 =========
 
+
+.. toctree::
+   :caption: Regression 1D
+   :maxdepth: 1
+
+   notebooks/regression_1D
+
+
 .. toctree::
    :caption: Classification 1D
    :maxdepth: 1
