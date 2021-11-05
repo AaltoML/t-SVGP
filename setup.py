@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 requirements = (
     "tensorflow==2.5.0",
     "tensorflow-probability==0.13.0",
-    "gpflow==2.21",
+    "gpflow==2.2.1",
     "pytest",
 )
 
