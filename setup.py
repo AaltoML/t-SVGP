@@ -1,11 +1,12 @@
 from setuptools import find_packages, setup
 
 requirements = (
-    "tensorflow==2.6.0",
-    "tensorflow-probability==0.14.1",
-    "gpflow",
+    "tensorflow==2.5.0",
+    "tensorflow-probability==0.13.0",
+    "gpflow==2.2.1",
     "pytest",
 )
+
 
 extra_requirements = {
     "demos": (
