@@ -11,7 +11,10 @@ jobs:
     strategy:
       matrix:
           python-version: [3.7]
-    name: Python-${{ matrix.python-version }}
+          tensorflow: ["~=2.6.0"]
+    name: Python-${{ matrix.python-version }} tensorflow${{ matrix.tensorflow }}
+    env:
+      VERSION_TF: ${{ matrix.tensorflow }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
@@ -27,13 +30,20 @@ jobs:
   docs:
     needs: check-and-test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+          python-version: [3.7]
+          tensorflow: ["~=2.6.0"]
+    name: Python-${{ matrix.python-version }} tensorflow${{ matrix.tensorflow }}
+    env:
+      VERSION_TF: ${{ matrix.tensorflow }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-    - run: |
+      run: |
         pip install --upgrade pip
         make install
     - name: build documentation
