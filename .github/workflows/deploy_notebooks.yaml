@@ -3,19 +3,41 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
+  check-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+          python-version: [3.7]
+    name: Python-${{ matrix.python-version }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        make install
+    - name: Run tests
+      run: make test
+
   docs:
+    needs: check-and-test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: Install dependencies
     - run: |
         pip install --upgrade pip
         make install
+    - name: build documentation
+    - run: |
         make docs
     - run: |
         TMP_DIR=$(mktemp -d -p $(pwd))
@@ -23,6 +45,7 @@ jobs:
         rm -rf docs
         mv $TMP_DIR docs
         touch docs/.nojekyll
+    - name: push documentation
     - run: |
         git add .
         git config --global user.email "none"
