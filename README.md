@@ -20,7 +20,7 @@ The paper's main result shows that an alternative (dual) parameterization for SV
 The repository has the following folder structure:
 
 * `scr` contains the source code
-* `demos` contains scripts to reproduce some of the experiments presented in the paper  
+* `notebooks` contains scripts to reproduce some of the experiments presented in the paper  
 * `docs` contains documentation in the form of notebooks and an api reference.
 * `tests` contains unit and integration tests for the source code
 
