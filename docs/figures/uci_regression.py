@@ -269,15 +269,12 @@ plt.plot(range(nit), nlpd_i_mean[2, :][:], label=names[2])
 plt.legend()
 plt.show()
 
-# Report
-print('Data: {}, n: {}, m: {}, steps: {}'.format(data_name, x.shape[0], mb_size,nit))
-print('{:<14} {:^13}   {:^13}   '.format('Method', 'NLPD', 'RMSE'))
 
 # Report
 print('Data: {}, n: {}, m: {}, steps: {}'.format(data_name, x.shape[0],mb_size,nit))
-print('{:<14} {:^13}   {:^13}   {:^13}'.format('Method','NLPD','RMSE','TIME'))
+print('{:<14} {:^13}   {:^13}   {:^13}'.format('Method','NLPD','RMSE'))
+
 for i in range(len(mods)):
     print('{:<14} {:.3f}+/-{:.3f}   {:.3f}+/-{:.3f}   {:.3f}+/-{:.3f}'.format(names[i],
                                                          nlpd_mean[i], nlpd_std[i],
-                                                         rmse_mean[i], rmse_std[i],
-                                                         time_mean[i], time_std[i]))
+                                                         rmse_mean[i], rmse_std[i]))
