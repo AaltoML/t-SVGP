@@ -35,11 +35,9 @@ def init_model(n_train):
     models = []
     names = []
 
-
     m = gpflow.models.SVGP(
         kernel=gpflow.kernels.Matern52(lengthscales=np.ones((1, x.shape[1]))*ell, variance=var),
         likelihood=gpflow.likelihoods.Bernoulli(), inducing_variable=Z.copy(), num_data=n_train)
-
 
     models.append(m)
     names.append('svgp')
@@ -51,7 +49,6 @@ def init_model(n_train):
 
     gpflow.set_trainable(m_svgp_nat.q_mu, False)
     gpflow.set_trainable(m_svgp_nat.q_sqrt, False)
-
 
     models.append(m_svgp_nat)
     names.append('svgp_nat')

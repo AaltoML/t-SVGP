@@ -242,9 +242,7 @@ for train_index, test_index in kf.split(X):
 
         j += 1
 
-
     fold += 1
-
 
 # Calculate averages and standard deviations
 rmse_mean = np.mean(ERRP, 1)
