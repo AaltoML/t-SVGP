@@ -53,17 +53,17 @@ def init_model(n_train):
     models.append(m_svgp_nat)
     names.append('svgp_nat')
 
-    m_cvi = t_SVGP(
+    m_tsvgp = t_SVGP(
     kernel=gpflow.kernels.Matern52(lengthscales=np.ones((1,x.shape[1]))*ell, variance=var),
     likelihood=gpflow.likelihoods.Bernoulli(), inducing_variable=Z.copy()
     , num_data=n_train)
 
 
     # Turn off natural params
-    gpflow.set_trainable(m_cvi.lambda_1 , False)
-    gpflow.set_trainable(m_cvi.lambda_2_sqrt , False)
+    gpflow.set_trainable(m_tsvgp.lambda_1 , False)
+    gpflow.set_trainable(m_tsvgp.lambda_2_sqrt , False)
 
-    models.append(m_cvi)
+    models.append(m_tsvgp)
     names.append('tsvgp')
 
     return models, names
