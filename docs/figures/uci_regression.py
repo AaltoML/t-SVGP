@@ -272,9 +272,9 @@ plt.show()
 
 # Report
 print('Data: {}, n: {}, m: {}, steps: {}'.format(data_name, x.shape[0],mb_size,nit))
-print('{:<14} {:^13}   {:^13}   {:^13}'.format('Method','NLPD','RMSE'))
+print('{:<14} {:^13}   {:^13}  '.format('Method','NLPD','RMSE'))
 
 for i in range(len(mods)):
-    print('{:<14} {:.3f}+/-{:.3f}   {:.3f}+/-{:.3f}   {:.3f}+/-{:.3f}'.format(names[i],
+    print('{:<14} {:.3f}+/-{:.3f}   {:.3f}+/-{:.3f}  '.format(names[i],
                                                          nlpd_mean[i], nlpd_std[i],
                                                          rmse_mean[i], rmse_std[i]))
