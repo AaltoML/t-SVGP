@@ -20,7 +20,7 @@ The paper's main result shows that an alternative (dual) parameterization for SV
 The repository has the following folder structure:
 
 * `scr` contains the source code
-* `demos` contains scripts to reproduce some of the experiments presented in the paper  
+* `experiments` contains scripts to reproduce some of the experiments presented in the paper  
 * `docs` contains documentation in the form of notebooks and an api reference.
 * `tests` contains unit and integration tests for the source code
 
@@ -32,11 +32,21 @@ To install the package, run:
 ```bash
 pip install -e .
 ```
-To install the dependencies needed to run `demos`, use `pip install -e .[demos]`.
+
+To run the tests, notebooks, build the docs or run the experiments, install the dependencies:
+
+```bash
+pip install \
+  -r tests_requirements.txt \
+  -r notebook_requirements.txt \
+  -r docs/docs_requirements.txt \
+  -e .
+```
+
 
 ### Notebooks
 
-To build the notebooks from source, run
+To build the notebooks from source, use jupytext:
 ```bash
 jupytext --to notebook [filename].py
 ```
