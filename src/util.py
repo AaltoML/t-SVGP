@@ -436,3 +436,5 @@ def gradient_transformation_mean_var_to_expectation(inputs, grads):
     ▽μ
     """
     return grads[0] - 2.0 * tf.einsum("lmo,ol->ml", grads[1], inputs), grads[1]
+
+
