@@ -108,6 +108,17 @@ class t_SVGP_white(GPModel):
         )  # [P, M, M] or [M, M]
         return posterior_from_dense_site_white(K_uu, self.lambda_1, self.lambda_2)
 
+    def cache_statistics_from_data(self, data):
+        X_data, y_data = data
+        lamb_1 = y_data / self.likelihood.variance
+        lamb_2 = tf.ones_like(lamb_1) / self.likelihood.variance
+        kuf = Kuf(self.inducing_variable, self.kernel, X_data)
+        return project_diag_sites(kuf, lamb_1, lamb_2)
+
+    @property
+    def cache_statistics(self):
+        return self.cache_statistics_from_data(self.data)
+
     def prior_kl(self) -> tf.Tensor:
         K_uu = Kuu(
             self.inducing_variable, self.kernel, jitter=default_jitter()
@@ -125,6 +136,29 @@ class t_SVGP_white(GPModel):
         )
         tf.debugging.assert_positive(var)  # We really should make the tests pass with this here
         return mu + self.mean_function(Xnew), var
+
+    # def predict_f_extra_data(
+    #         self, Xnew: InputData, full_cov=False, full_output_cov=False, extra_data=RegressionData) -> MeanAndVariance:
+    #     """
+    #     Compute the mean and variance of the latent function at some new points
+    #     Xnew.
+    #     """
+    #     l_extra, L_extra = self.cache_statistics_from_data(extra_data)
+    #     l_data, L_data =  self.l, self.L
+    #
+    #     l = l_data + l_extra
+    #     L = tf.linalg.cholesky(
+    #         L_data @ tf.linalg.matrix_transpose(L_data) +
+    #         L_extra @ tf.linalg.matrix_transpose(L_extra)
+    #     )
+    #
+    #     # predicting at new inputs
+    #     kuu = Kuu(self.inducing_variable, self.kernel, jitter=default_jitter())
+    #     kus = Kuf(self.inducing_variable, self.kernel, Xnew)
+    #     kss = self.kernel.K_diag(Xnew)[..., None]
+    #     return conditional_from_precision_sites(
+    #         kuu, kss, kus, L, l
+    #     )
 
     def elbo(self, data: RegressionData) -> tf.Tensor:
         """
@@ -147,18 +181,8 @@ class t_SVGP_white(GPModel):
         """The variational lower bound"""
         return self.elbo()
 
-    def natgrad_step(self, X, Y, lr=0.1, jitter=1e-9):
-        """Takes natural gradient step in Variational parameters in the local parameters
-        λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
-
-        Input:
-        :param: X : N x D
-        :param: Y:  N x 1
-        :param: lr: Scalar
-
-        Output:
-        Updates the params
-        """
+    def compute_data_natural_params(self, data, jitter=1e-9):
+        X, Y = data
         mean, var = self.predict_f(X)
         meanZ, varZ = self.predict_f(self.inducing_variable.Z)
 
@@ -184,6 +208,26 @@ class t_SVGP_white(GPModel):
 
         # chain rule at f
         grad_mu = gradient_transformation_mean_var_to_expectation(meanZ, grads)
+
+        return grad_mu
+
+
+    def natgrad_step(self, X, Y, lr=0.1, jitter=1e-9):
+        """Takes natural gradient step in Variational parameters in the local parameters
+        λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
+
+        Input:
+        :param: X : N x D
+        :param: Y:  N x 1
+        :param: lr: Scalar
+
+        Output:
+        Updates the params
+        """
+
+        # chain rule at f
+        grad_mu = self.compute_data_natural_params((X, Y))
+        K_uu = Kuu(self.inducing_variable, self.kernel)
 
         if self.num_data is not None:
             num_data = tf.cast(self.num_data, dtype=tf.float64)
