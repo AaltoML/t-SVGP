@@ -108,12 +108,6 @@ class t_SVGP_white(GPModel):
         )  # [P, M, M] or [M, M]
         return posterior_from_dense_site_white(K_uu, self.lambda_1, self.lambda_2)
 
-    def cache_statistics_from_data(self, data):
-        X_data, y_data = data
-        lamb_1 = y_data / self.likelihood.variance
-        lamb_2 = tf.ones_like(lamb_1) / self.likelihood.variance
-        kuf = Kuf(self.inducing_variable, self.kernel, X_data)
-        return project_diag_sites(kuf, lamb_1, lamb_2)
 
     @property
     def cache_statistics(self):
@@ -137,28 +131,30 @@ class t_SVGP_white(GPModel):
         tf.debugging.assert_positive(var)  # We really should make the tests pass with this here
         return mu + self.mean_function(Xnew), var
 
-    # def predict_f_extra_data(
-    #         self, Xnew: InputData, full_cov=False, full_output_cov=False, extra_data=RegressionData) -> MeanAndVariance:
-    #     """
-    #     Compute the mean and variance of the latent function at some new points
-    #     Xnew.
-    #     """
-    #     l_extra, L_extra = self.cache_statistics_from_data(extra_data)
-    #     l_data, L_data =  self.l, self.L
-    #
-    #     l = l_data + l_extra
-    #     L = tf.linalg.cholesky(
-    #         L_data @ tf.linalg.matrix_transpose(L_data) +
-    #         L_extra @ tf.linalg.matrix_transpose(L_extra)
-    #     )
-    #
-    #     # predicting at new inputs
-    #     kuu = Kuu(self.inducing_variable, self.kernel, jitter=default_jitter())
-    #     kus = Kuf(self.inducing_variable, self.kernel, Xnew)
-    #     kss = self.kernel.K_diag(Xnew)[..., None]
-    #     return conditional_from_precision_sites(
-    #         kuu, kss, kus, L, l
-    #     )
+    def predict_f_extra_data(
+            self, Xnew: InputData, full_cov=False, full_output_cov=False, extra_data=RegressionData) -> MeanAndVariance:
+        """
+        Compute the mean and variance of the latent function at some new points
+        Xnew.
+        """
+        l_extra, L_extra = self.compute_data_natural_params(extra_data)
+        lambda_1 = self.lambda_1
+        lambda_2 = -0.5 * self.lambda_2
+
+        K_uu = Kuu(self.inducing_variable, self.kernel)
+
+        l = l_data + (K_uu @ l_extra)
+        L_white = K_uu @ L_extra @ K_uu
+        L = L_data + L_white
+
+        # predicting at new inputs
+        K_uu = Kuu(self.inducing_variable, self.kernel, jitter=default_jitter())
+        K_uf = Kuf(self.inducing_variable, self.kernel, Xnew)
+        K_ff = self.kernel.K_diag(Xnew)[..., None]
+
+        return conditional_from_precision_sites_white(
+            K_uu, K_ff, K_uf, l, L
+        )
 
     def elbo(self, data: RegressionData) -> tf.Tensor:
         """
@@ -238,6 +234,7 @@ class t_SVGP_white(GPModel):
 
         lambda_1 = self.lambda_1
         lambda_2 = -0.5 * self.lambda_2
+
         # compute update in natural form
         lambda_1 = (1.0 - lr) * lambda_1 + lr * scale * K_uu @ grad_mu[0]
         lambda_2 = (1.0 - lr) * lambda_2 + lr * scale * K_uu @ grad_mu[1] @ K_uu
