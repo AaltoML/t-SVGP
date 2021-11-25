@@ -137,24 +137,23 @@ class t_SVGP_white(GPModel):
         Compute the mean and variance of the latent function at some new points
         Xnew.
         """
-        l_extra, L_extra = self.compute_data_natural_params(extra_data)
+        grad_mu = self.compute_data_natural_params(extra_data)
         lambda_1 = self.lambda_1
         lambda_2 = -0.5 * self.lambda_2
-
-        K_uu = Kuu(self.inducing_variable, self.kernel)
-
-        l = l_data + (K_uu @ l_extra)
-        L_white = K_uu @ L_extra @ K_uu
-        L = L_data + L_white
+        #
+        K_uu = Kuu(self.inducing_variable, self.kernel, jitter=default_jitter())
+        #
+        lambda_1c = lambda_1 + K_uu @ grad_mu[0]
+        lambda_2c = -2*(lambda_2 + K_uu @ grad_mu[1] @ K_uu)
 
         # predicting at new inputs
-        K_uu = Kuu(self.inducing_variable, self.kernel, jitter=default_jitter())
         K_uf = Kuf(self.inducing_variable, self.kernel, Xnew)
         K_ff = self.kernel.K_diag(Xnew)[..., None]
 
-        return conditional_from_precision_sites_white(
-            K_uu, K_ff, K_uf, l, L
-        )
+        mu, var = conditional_from_precision_sites_white(
+                    K_uu, K_ff, K_uf, lambda_1c, L2=lambda_2c)
+
+        return mu + self.mean_function(Xnew), var
 
     def elbo(self, data: RegressionData) -> tf.Tensor:
         """
