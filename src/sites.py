@@ -36,8 +36,8 @@ class DiagSites(Sites):
         """
         super().__init__(name=name)
 
-        self.lambda_1 = Parameter(lambda_1, dtype=default_float())  # [M, P]
-        self.lambda_2 = Parameter(lambda_2, transform=positive())  # [M, P]
+        self.lambda_1 = Parameter(lambda_1, dtype=default_float(), trainable=False)  # [M, P]
+        self.lambda_2 = Parameter(lambda_2, transform=positive(), trainable=False)  # [M, P]
 
 
 class DenseSites(Sites):
@@ -53,16 +53,16 @@ class DenseSites(Sites):
         """
         super().__init__(name=name)
 
-        self.lambda_1 = Parameter(lambda_1, dtype=default_float())  # [M, P]
+        self.lambda_1 = Parameter(lambda_1, dtype=default_float(), trainable=False)  # [M, P]
         self.num_latent_gps = lambda_1.shape[0]
 
         assert (lambda_2_sqrt is not None) or (lambda_2 is not None)
 
         if lambda_2_sqrt is not None:
             self.factor = True
-            self._lambda_2_sqrt = Parameter(lambda_2_sqrt, transform=triangular())  # [L|P, M, M]
+            self._lambda_2_sqrt = Parameter(lambda_2_sqrt, transform=triangular(), trainable=False)  # [L|P, M, M]
         else:
-            self._lambda_2 = Parameter(lambda_2)  # [L|P, M, M]
+            self._lambda_2 = Parameter(lambda_2, trainable=False)  # [L|P, M, M]
             self.factor = False
 
     @property

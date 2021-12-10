@@ -132,17 +132,19 @@ class t_SVGP_white(GPModel):
         return mu + self.mean_function(Xnew), var
 
     def predict_f_extra_data(
-            self, Xnew: InputData, full_cov=False, full_output_cov=False, extra_data=RegressionData) -> MeanAndVariance:
+            self, Xnew: InputData, extra_data=RegressionData, iter=1, lr=1.0) -> MeanAndVariance:
         """
         Compute the mean and variance of the latent function at some new points
         Xnew.
         """
+
         grad_mu = self.compute_data_natural_params(extra_data)
+
         lambda_1 = self.lambda_1
         lambda_2 = -0.5 * self.lambda_2
-        #
+
         K_uu = Kuu(self.inducing_variable, self.kernel, jitter=default_jitter())
-        #
+
         lambda_1c = lambda_1 + K_uu @ grad_mu[0]
         lambda_2c = -2*(lambda_2 + K_uu @ grad_mu[1] @ K_uu)
 
@@ -176,7 +178,7 @@ class t_SVGP_white(GPModel):
         """The variational lower bound"""
         return self.elbo()
 
-    def compute_data_natural_params(self, data, jitter=1e-9):
+    def compute_data_natural_params(self, data, jitter=1e-9, nat_params=None):
         X, Y = data
         mean, var = self.predict_f(X)
         meanZ, varZ = self.predict_f(self.inducing_variable.Z)
@@ -207,7 +209,7 @@ class t_SVGP_white(GPModel):
         return grad_mu
 
 
-    def natgrad_step(self, X, Y, lr=0.1, jitter=1e-9):
+    def natgrad_step(self, dataset, lr=0.1, jitter=1e-9):
         """Takes natural gradient step in Variational parameters in the local parameters
         λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
 
@@ -219,6 +221,8 @@ class t_SVGP_white(GPModel):
         Output:
         Updates the params
         """
+
+        X, Y = dataset
 
         # chain rule at f
         grad_mu = self.compute_data_natural_params((X, Y))
