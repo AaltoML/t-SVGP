@@ -95,7 +95,7 @@ def test_dsgpr_predict_against_gpflow_sgpr():
     data, sgpr, tsgpr = setup()
     X, Y = data
 
-    tsgpr.natgrad_step(X, Y, lr=1.0)
+    tsgpr.natgrad_step((X, Y), lr=1.0)
     X = data[1]
     means, vars = sgpr.predict_f(X)
     means_, vars_ = tsgpr.predict_f(X)
