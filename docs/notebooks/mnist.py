@@ -168,7 +168,7 @@ def train(model, iterations):
                     
     @tf.function
     def optimization_e_step(model, data):
-        model.natgrad_step(*data, lr=nat_lr)
+        model.natgrad_step(data, lr=nat_lr)
 
     for _ in tqdm(range(iterations)):
         data = next(train_iter)

@@ -119,7 +119,7 @@ nit_m = 1
 
 
 def E_step():
-    [m_tsvgp.natgrad_step(X, Y, lr_natgrad) for _ in range(nit_e)]
+    [m_tsvgp.natgrad_step((X, Y), lr_natgrad) for _ in range(nit_e)]
 
 
 optimizer = tf.optimizers.Adam(lr_adam)

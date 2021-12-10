@@ -99,7 +99,7 @@ data = (tf.convert_to_tensor(X), tf.convert_to_tensor(Y))
 
 print("Elbos at initial parameter")
 
-[m_t.natgrad_step(X, Y, lr_natgrad) for _ in range(nit)]
+[m_t.natgrad_step(data, lr_natgrad) for _ in range(nit)]
 print("t-SVGP elbo:", m_t.elbo(data).numpy())
 
 natgrad_opt = NaturalGradient(gamma=lr_natgrad)

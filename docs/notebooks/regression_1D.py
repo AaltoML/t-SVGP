@@ -122,10 +122,10 @@ print("Elbos at initial parameter")
 
 print("GRR llh:", m_gpr.log_marginal_likelihood().numpy())
 
-[m_t_white.natgrad_step(X, Y, lr_natgrad) for _ in range(nit)]
+[m_t_white.natgrad_step((X, Y), lr_natgrad) for _ in range(nit)]
 print("t-SVGP_white elbo:", m_t_white.elbo(data).numpy())
 
-[m_t.natgrad_step(X, Y, lr_natgrad) for _ in range(nit)]
+[m_t.natgrad_step((X, Y), lr_natgrad) for _ in range(nit)]
 print("t-SVGP elbo:", m_t.elbo(data).numpy())
 
 natgrad_opt = NaturalGradient(gamma=lr_natgrad)
