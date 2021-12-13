@@ -1,0 +1,262 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "20d74e0e",
+   "metadata": {
+    "cell_marker": "\"\"\""
+   },
+   "source": [
+    "# 2D Classification"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b997c035",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import gpflow\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import tensorflow as tf\n",
+    "from gpflow import set_trainable\n",
+    "from gpflow.optimizers import NaturalGradient\n",
+    "from tqdm import tqdm\n",
+    "\n",
+    "from src.models.tsvgp import t_SVGP"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4e1a212c",
+   "metadata": {
+    "cell_marker": "\"\"\""
+   },
+   "source": [
+    "## Loading banana dataset"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c96179a6",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "X = np.loadtxt(\"data/banana_X_train\", delimiter=\",\")\n",
+    "Y = np.loadtxt(\"data/banana_Y_train\", delimiter=\",\").reshape(-1, 1)\n",
+    "mask = Y[:, 0] == 1\n",
+    "N = len(Y)\n",
+    "print(N)\n",
+    "\n",
+    "plt.figure(figsize=(6, 6))\n",
+    "plt.plot(X[mask, 0], X[mask, 1], \"oC0\", mew=0, alpha=0.5)\n",
+    "_ = plt.plot(X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], \"oC1\", mew=0, alpha=0.5)\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a4f8663a",
+   "metadata": {
+    "cell_marker": "\"\"\"",
+    "lines_to_next_cell": 0
+   },
+   "source": [
+    "## Declaring classification model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7f7e619c",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "M = 100  # Number of inducing locations\n",
+    "Z = X[:M, :]\n",
+    "\n",
+    "# GP parameters\n",
+    "var_gp = 0.6\n",
+    "len_gp = 0.5\n",
+    "\n",
+    "m_t = t_SVGP(\n",
+    "    gpflow.kernels.SquaredExponential(lengthscales=len_gp, variance=var_gp),\n",
+    "    gpflow.likelihoods.Bernoulli(),\n",
+    "    Z,\n",
+    "    num_data=N,\n",
+    ")\n",
+    "\n",
+    "m_q_white = gpflow.models.SVGP(\n",
+    "    gpflow.kernels.SquaredExponential(lengthscales=len_gp, variance=var_gp),\n",
+    "    gpflow.likelihoods.Bernoulli(),\n",
+    "    Z,\n",
+    "    num_data=N,\n",
+    "    whiten=True,\n",
+    ")\n",
+    "\n",
+    "m_q = gpflow.models.SVGP(\n",
+    "    gpflow.kernels.SquaredExponential(lengthscales=len_gp, variance=var_gp),\n",
+    "    gpflow.likelihoods.Bernoulli(),\n",
+    "    Z,\n",
+    "    num_data=N,\n",
+    "    whiten=False,\n",
+    ")\n",
+    "\n",
+    "set_trainable(m_q_white.kernel.lengthscales, False)\n",
+    "set_trainable(m_q.kernel.lengthscales, False)\n",
+    "set_trainable(m_t.kernel.lengthscales, False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "51483cc5",
+   "metadata": {
+    "cell_marker": "\"\"\"",
+    "lines_to_next_cell": 0
+   },
+   "source": [
+    "## Training model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3a038f82",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "lr_natgrad = 0.8\n",
+    "nit = 10\n",
+    "\n",
+    "data = (tf.convert_to_tensor(X), tf.convert_to_tensor(Y))\n",
+    "\n",
+    "print(\"Elbos at initial parameter\")\n",
+    "\n",
+    "[m_t.natgrad_step(data, lr_natgrad) for _ in range(nit)]\n",
+    "print(\"t-SVGP elbo:\", m_t.elbo(data).numpy())\n",
+    "\n",
+    "natgrad_opt = NaturalGradient(gamma=lr_natgrad)\n",
+    "training_loss = m_q.training_loss_closure(data)\n",
+    "training_loss_white = m_q_white.training_loss_closure(data)\n",
+    "\n",
+    "# q-SVGP\n",
+    "variational_params = [(m_q.q_mu, m_q.q_sqrt)]\n",
+    "[natgrad_opt.minimize(training_loss, var_list=variational_params) for _ in range(nit)]\n",
+    "print(\"q-SVGP elbo:\", -training_loss().numpy())\n",
+    "\n",
+    "variational_params_white = [(m_q_white.q_mu, m_q_white.q_sqrt)]\n",
+    "[natgrad_opt.minimize(training_loss_white, var_list=variational_params_white) for _ in range(nit)]\n",
+    "print(\"q-SVGP (white) elbo:\", -training_loss_white().numpy())\n",
+    "\n",
+    "elbo = m_t.elbo(data).numpy()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "04eb310e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "n_grid = 40\n",
+    "x_grid = np.linspace(-3, 3, n_grid)\n",
+    "xx, yy = np.meshgrid(x_grid, x_grid)\n",
+    "Xplot = np.vstack((xx.flatten(), yy.flatten())).T\n",
+    "p, _ = m_t.predict_y(Xplot)  # here we only care about the mean\n",
+    "plt.imshow(p.numpy().reshape(n_grid, n_grid), alpha=0.3, extent=[-3, 3, -3, 3], origin=\"lower\")\n",
+    "# plt.plot(X[mask, 0], X[mask, 1], \"oC0\", mew=0, alpha=0.5)\n",
+    "# _ = plt.plot(\n",
+    "#    X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], \"oC1\", mew=0, alpha=0.5\n",
+    "# )\n",
+    "plt.show()\n",
+    "plt.plot(X[mask, 0], X[mask, 1], \"oC0\", mew=0, alpha=0.5)\n",
+    "_ = plt.plot(X[np.logical_not(mask), 0], X[np.logical_not(mask), 1], \"oC1\", mew=0, alpha=0.5)\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "10475a21",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "\n",
+    "print(\"Computing elbos for new parameter grid\")\n",
+    "\n",
+    "\n",
+    "# ======================================== ELBO for different theta\n",
+    "N_grid = 100\n",
+    "llh_svgp = np.zeros((N_grid,))\n",
+    "llh_svgp_white = np.zeros((N_grid,))\n",
+    "llh_scvi = np.zeros((N_grid,))\n",
+    "vars_gp = np.linspace(0.05, 1.0, N_grid)\n",
+    "\n",
+    "for i, v in enumerate(tqdm(vars_gp)):\n",
+    "    m_t.kernel.variance.assign(tf.constant(v))\n",
+    "    llh_scvi[i] = m_t.elbo(data).numpy()\n",
+    "    m_q.kernel.variance.assign(tf.constant(v))\n",
+    "    llh_svgp[i] = m_q.elbo(data).numpy()\n",
+    "    m_q_white.kernel.variance.assign(tf.constant(v))\n",
+    "    llh_svgp_white[i] = m_q_white.elbo(data).numpy()\n",
+    "\n",
+    "print(\"done.\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5be78302",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "plt.figure()\n",
+    "plt.plot(vars_gp, llh_scvi, label=\"t-SVGP\", linewidth=4)\n",
+    "plt.plot(vars_gp, llh_svgp, label=\"q-SVGP\", linewidth=4)\n",
+    "plt.plot(vars_gp, llh_svgp_white, label=\"q-SVGP (whitened)\", linewidth=4)\n",
+    "plt.vlines(\n",
+    "    var_gp,\n",
+    "    ymin=llh_scvi.min() - 10,\n",
+    "    ymax=llh_scvi.max() + 10,\n",
+    "    color=[0, 0, 0, 1.0],\n",
+    "    linewidth=1.5,\n",
+    "    linestyle=\"dashed\",\n",
+    ")\n",
+    "plt.xlim([0.0, 1.0])\n",
+    "plt.ylim(\n",
+    "    [\n",
+    "        llh_scvi.min() - 0.0 * (llh_scvi.max() - llh_scvi.min()),\n",
+    "        llh_scvi.max() + 0.4 * (llh_scvi.max() - llh_scvi.min()),\n",
+    "    ]\n",
+    ")\n",
+    "plt.legend()\n",
+    "plt.xlabel(\"$\\\\theta$\")\n",
+    "plt.ylabel(\"ELBO\")\n",
+    "plt.show()"
+   ]
+  }
+ ],
+ "metadata": {
+  "jupytext": {
+   "cell_markers": "\"\"\""
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

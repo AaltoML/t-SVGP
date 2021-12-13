@@ -1,0 +1,176 @@
+:py:mod:`src.util`
+==================
+
+.. py:module:: src.util
+
+.. autoapi-nested-parse::
+
+   Utilities for the model classes
+
+
+
+Module Contents
+---------------
+
+.. py:function:: conditional_from_precision_sites_white(Kuu: tensorflow.Tensor, Kff: tensorflow.Tensor, Kuf: tensorflow.Tensor, l: tensorflow.Tensor, L: tensorflow.Tensor = None, L2=None, jitter=1e-09)
+
+   Given a g₁ and g2, and distribution p and q such that
+     p(g₂) = N(g₂; 0, Kuu)
+
+     p(g₁) = N(g₁; 0, Kff)
+     p(g₁ | g₂) = N(g₁; Kfu (Kuu⁻¹) g₂, Kff - Kfu (Kuu⁻¹) Kuf)
+
+   And  q(g₂) = N(g₂; μ, Σ) such that
+       Σ⁻¹  = Kuu⁻¹  + Kuu⁻¹LLᵀKuu⁻¹
+       Σ⁻¹μ = Kuu⁻¹l
+
+   This method computes the mean and (co)variance of
+     q(g₁) = ∫ q(g₂) p(g₁ | g₂) dg₂ = N(g₂; μ*, Σ**)
+
+   with
+   Σ** = k** - kfu Kuu⁻¹ kuf - kfu Kuu⁻¹ Σ Kuu⁻¹ kuf
+       = k** - kfu Kuu⁻¹kuf + kfu (Kuu + LLᵀ)⁻¹ kuf
+   μ* = k*u Kuu⁻¹ m
+      = k*u Kuu⁻¹ Λ⁻¹ Kuu⁻¹ l
+      = k*u (Kuu + LLᵀ)⁻¹ l
+
+   Inputs:
+   :param Kuu: tensor M x M
+   :param Kff: tensor N x 1
+   :param Kuf: tensor M x N
+   :param L: tensor L x M x M
+   :param l: tensor M x L
+
+
+.. py:function:: conditional_from_precision_sites(Kuu: tensorflow.Tensor, Kff: tensorflow.Tensor, Kuf: tensorflow.Tensor, l: tensorflow.Tensor, L: tensorflow.Tensor = None, L2=None)
+
+   Given a g₁ and g2, and distribution p and q such that
+     p(g₂) = N(g₂; 0, Kuu)
+
+     p(g₁) = N(g₁; 0, Kff)
+     p(g₁ | g₂) = N(g₁; Kfu (Kuu⁻¹) g₂, Kff - Kfu (Kuu⁻¹) Kuf)
+
+   And  q(g₂) = N(g₂; μ, Σ) such that
+       Σ⁻¹  = Kuu⁻¹  + LLᵀ
+       Σ⁻¹μ = l
+
+   This method computes the mean and (co)variance of
+     q(g₁) = ∫ q(g₂) p(g₁ | g₂) dg₂ = N(g₂; μ*, Σ**)
+
+   with
+   Σ** = k** - kfu Kuu⁻¹ kuf - kfu Kuu⁻¹ Σ Kuu⁻¹ kuf
+       = k** - kfu Kuu⁻¹kuf + kfu Kuu⁻¹ (Kuu⁻¹  + LLᵀ)⁻¹ Kuu⁻¹ kuf
+       = k** - kfu Kuu⁻¹kuf + kfu Kuu⁻¹ (Kuu - Kuu L(I + LᵀKuuL)⁻¹Lᵀ Kuu) Kuu⁻¹ kuf
+       = k** - kfu L(I + LᵀKuuL)⁻¹Lᵀ kuf
+       = k** - kfu LW⁻¹Lᵀ kuf
+       = k** - kfu L Lw⁻ᵀLw⁻¹ Lᵀ kuf
+       = k** - (Lw⁻¹ Lᵀ kuf)ᵀ Lw⁻¹ Lᵀ kuf
+       = k** - (D kuf)ᵀ D kuf
+
+   μ* = k*u Kuu⁻¹ m
+      = k*u Kuu⁻¹ Σ l
+      = k*u Kuu⁻¹ (Kuu⁻¹  + LLᵀ)⁻¹ l
+      = k*u Kuu⁻¹ (Kuu - Kuu L(I + LᵀKuuL)⁻¹Lᵀ Kuu) l
+      = k*u l - k*u L(I + LᵀKuuL)⁻¹Lᵀ Kuu l
+      = k*u l - k*u LW⁻¹Lᵀ Kuu l
+      = k*u l - (Lw⁻¹ Lᵀ kuf)ᵀ Lw⁻¹ Lᵀ Kuu l
+      = k*u l - (D kuf)ᵀ D Kuu l
+
+   Inputs:
+   :param Kuu: tensor M x M
+   :param Kff: tensor N x 1
+   :param Kuf: tensor M x N
+   :param L: tensor L x M x M
+   :param l: tensor M x L
+
+
+.. py:function:: project_diag_sites(Kuf: tensorflow.Tensor, lambda_1: tensorflow.Tensor, lambda_2: tensorflow.Tensor, Kuu: Optional[tensorflow.Tensor] = None, cholesky=True)
+
+   From  Kuu, Kuf, λ₁, λ₂, computes statistics
+   L = Kuu⁻¹ (Σₙ Kufₙ λ₂ₙ Kfₙu) Kuu⁻¹
+   l = Kuu⁻¹ (Σₙ Kufₙ λ₁ₙ)
+
+   :param Kuf: L x M x N
+   :param lambda_2: N x L
+   :param lambda_1: N x L
+   :param Kuu: L x M x M
+
+   return:
+   l : M x L
+   L : L x M x M
+
+
+.. py:function:: kl_from_precision_sites_white(A, l, L=None, L2=None)
+
+   Computes the kl divergence KL[q(f)|p(f)]
+
+   where:
+   q(f) = N(μ,Σ) and covariance of a Gaussian with natural parameters
+   with
+       Σ = Λ⁻¹  = (A⁻¹  + A⁻¹LLᵀA⁻¹)⁻¹  = A(A + LLᵀ)⁻¹A
+       μ = Λ⁻¹ A⁻¹l = Σ A⁻¹l
+
+   p(f) = N(0,A)
+
+
+.. py:function:: kl_from_precision_sites(A, l, L=None, L2=None)
+
+   Computes the kl divergence KL[q(f)|p(f)]
+
+   where:
+   q(f) = N(μ,Σ) and covariance of a Gaussian with natural parameters
+   with
+       Σ = Λ⁻¹  = (A⁻¹  + A⁻¹LLᵀA⁻¹)⁻¹  = A(A + LLᵀ)⁻¹A
+       μ = Λ⁻¹ A⁻¹l = Σ A⁻¹l
+
+   p(f) = N(0,A)
+
+
+.. py:function:: posterior_from_dense_site(K, lambda_1, lambda_2_sqrt)
+
+   Returns the mean and cholesky factor of the density q(u) = p(u)t(u) = 𝓝(u; m, S)
+   where p(u) = 𝓝(u; 0, K) and t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)
+
+   P = -2Λ₂
+
+   S = (K⁻¹ + P)⁻¹ = (K⁻¹ + LLᵀ)⁻¹ = K - KLW⁻¹LᵀK , W = (I + LᵀKL)
+   m = S λ₁
+
+   Input:
+   :param: K : M x M
+   :param: lambda_1: M x P
+   :param: lambda_2: P x M x M
+
+   Output:
+   m: M x P
+   chol_S: P x M x M
+
+
+.. py:function:: posterior_from_dense_site_white(K, lambda_1, lambda_2, jitter=1e-09)
+
+   Returns the mean and cholesky factor of the density q(u) = p(u)t(u) = 𝓝(u; m, S)
+   where p(u) = 𝓝(u; 0, K) and t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)
+
+   S = Λ₂⁻¹ = (K⁻¹ + K⁻¹PK⁻¹)⁻¹ = = [K⁻¹(K + P)K⁻¹]⁻¹  = K(K + P)⁻¹K
+   m = S K⁻¹λ₁ = K(K + LLᵀ)⁻¹λ₁
+
+   Input:
+   :param: K : M x M
+   :param: lambda_1: M x P
+   :param: lambda_2: P x M x M
+
+   Output:
+   m: M x P
+   chol_S: P x M x M
+
+
+.. py:function:: gradient_transformation_mean_var_to_expectation(inputs, grads)
+
+   Transforms gradient 𝐠 of a function wrt [μ, σ²]
+   into its gradients wrt to [μ, σ² + μ²]
+   :param inputs: [μ, σ²]
+   :param grads: 𝐠
+   Output:
+   ▽μ
+
+

@@ -1,0 +1,135 @@
+:py:mod:`src.models.tsvgp`
+==========================
+
+.. py:module:: src.models.tsvgp
+
+.. autoapi-nested-parse::
+
+   Module for the t-SVGP model
+
+
+
+Module Contents
+---------------
+
+.. py:class:: base_SVGP(kernel, likelihood, inducing_variable, *, mean_function=None, num_latent_gps: int = 1, num_data=None)
+
+   Bases: :py:obj:`gpflow.models.model.GPModel`, :py:obj:`gpflow.models.training_mixins.ExternalDataTrainingLossMixin`, :py:obj:`abc.ABC`
+
+   Modified gpflow.svgp.SVGP class to accommodate
+   for different paramaterization of q(u)
+
+   - kernel, likelihood, inducing_variables, mean_function are appropriate
+     GPflow objects
+   - num_latent_gps is the number of latent processes to use, defaults to 1
+   - num_data is the total number of observations, defaults to X.shape[0]
+     (relevant when feeding in external minibatches)
+
+   .. py:method:: get_mean_chol_cov_inducing_posterior(self)
+      :abstractmethod:
+
+      Returns the mean and cholesky factor of the covariance matrix of q(u)
+
+
+   .. py:method:: prior_kl(self) -> tensorflow.Tensor
+
+      Returns the KL divergence KL[q(u)|p(u)]
+
+
+   .. py:method:: maximum_log_likelihood_objective(self, data: gpflow.models.model.RegressionData) -> tensorflow.Tensor
+
+      The variational lower bound
+      :param data: input data
+
+
+   .. py:method:: elbo(self, data: gpflow.models.model.RegressionData) -> tensorflow.Tensor
+
+      This gives a variational bound (the evidence lower bound or ELBO) on
+      the log marginal likelihood of the model.
+      :param data: input data
+
+
+   .. py:method:: predict_f(self, Xnew: gpflow.models.model.InputData, full_cov=False, full_output_cov=False) -> gpflow.models.model.MeanAndVariance
+
+      Posterior prediction at new input Xnew
+      :param Xnew: N x D Tensor
+
+
+
+.. py:class:: t_SVGP(kernel, likelihood, inducing_variable, *, mean_function=None, num_latent_gps: int = 1, lambda_1=None, lambda_2_sqrt=None, num_data=None, force=False)
+
+   Bases: :py:obj:`base_SVGP`
+
+   Class for the t-SVGP model
+
+   - kernel, likelihood, inducing_variables, mean_function are appropriate
+     GPflow objects
+   - num_latent_gps is the number of latent processes to use, defaults to 1
+   - q_diag is a boolean. If True, the covariance is approximated by a
+     diagonal matrix.
+   - whiten is a boolean. If True, we use the whitened representation of
+     the inducing points.
+   - num_data is the total number of observations, defaults to X.shape[0]
+     (relevant when feeding in external minibatches)
+
+   .. py:method:: _init_variational_parameters(self, num_inducing, lambda_1, lambda_2_sqrt, **kwargs)
+
+      Constructs the site parameters λ₁, Λ₂.
+      for site t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)
+
+      Parameters
+      ----------
+      :param num_inducing: int
+          Number of inducing variables, typically referred to as M.
+      :param lambda_1: np.array or None
+          First order natural parameter of the variational site.
+      :param lambda_2_sqrt: np.array or None
+          Second order natural parameter of the variational site.
+
+
+   .. py:method:: lambda_1(self)
+      :property:
+
+      first natural parameter
+
+
+   .. py:method:: lambda_2_sqrt(self)
+      :property:
+
+      Cholesky factor of the second natural parameter
+
+
+   .. py:method:: lambda_2(self)
+      :property:
+
+      second natural parameter
+
+
+   .. py:method:: get_mean_chol_cov_inducing_posterior(self)
+
+      Computes the mean and cholesky factor of the posterior
+      on the inducing variables q(u) = 𝓝(u; m, S)
+      S = (K⁻¹ + Λ₂)⁻¹ = (K⁻¹ + L₂L₂ᵀ)⁻¹ = K - KL₂W⁻¹L₂ᵀK , W = (I + L₂ᵀKL₂)⁻¹
+      m = S λ₁
+
+
+   .. py:method:: new_predict_f(self, Xnew: gpflow.models.model.InputData, full_cov=False, full_output_cov=False) -> gpflow.models.model.MeanAndVariance
+
+      Posterior prediction at new input Xnew
+      :param Xnew: N x D Tensor
+
+
+   .. py:method:: natgrad_step(self, data, lr=0.1, jitter=1e-09)
+
+      Takes natural gradient step in Variational parameters in the local parameters
+      λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
+      Input:
+      :param: X : N x D
+      :param: Y:  N x 1
+      :param: lr: Scalar
+
+      Output:
+      Updates the params
+
+
+

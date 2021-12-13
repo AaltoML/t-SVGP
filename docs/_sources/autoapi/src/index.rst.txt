@@ -1,0 +1,18 @@
+:orphan:
+
+:py:mod:`src`
+=============
+
+.. py:module:: src
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   sites/index.rst
+   util/index.rst
+
+

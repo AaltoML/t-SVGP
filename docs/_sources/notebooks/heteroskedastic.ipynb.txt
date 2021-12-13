@@ -1,0 +1,229 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "ae309987",
+   "metadata": {
+    "cell_marker": "\"\"\""
+   },
+   "source": [
+    "# Heteroskedastic Regression"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "00bd265a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "import gpflow as gpf\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import tensorflow as tf\n",
+    "import tensorflow_probability as tfp\n",
+    "\n",
+    "from src.models.tsvgp import t_SVGP\n",
+    "\n",
+    "rng = np.random.RandomState(123)\n",
+    "tf.random.set_seed(42)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6f9e0c64",
+   "metadata": {
+    "cell_marker": "\"\"\""
+   },
+   "source": [
+    "## Loading motorcycle accident data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "427635f0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "csv_data = np.loadtxt(\"data/mcycle.csv\", delimiter=\",\", skiprows=1)\n",
+    "X = csv_data[:, 0].reshape(-1, 1)\n",
+    "Y = csv_data[:, 1].reshape(-1, 1)\n",
+    "data = (X, Y)\n",
+    "N = len(X)\n",
+    "Y /= Y.std()\n",
+    "plt.figure()\n",
+    "plt.plot(X, Y, \"*\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d16273a8",
+   "metadata": {
+    "cell_marker": "\"\"\"",
+    "lines_to_next_cell": 2
+   },
+   "source": [
+    "## Declaring heteroskedastic regression model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fc34c10f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "likelihood = gpf.likelihoods.HeteroskedasticTFPConditional(\n",
+    "    distribution_class=tfp.distributions.Normal,  # Gaussian Likelihood\n",
+    "    scale_transform=tfp.bijectors.Exp(),  # Exponential Transform\n",
+    ")\n",
+    "kernel = gpf.kernels.SeparateIndependent(\n",
+    "    [\n",
+    "        gpf.kernels.SquaredExponential(),  # This is k1, the kernel of f1\n",
+    "        gpf.kernels.SquaredExponential(),  # this is k2, the kernel of f2\n",
+    "    ]\n",
+    ")\n",
+    "# Initial inducing points position Z\n",
+    "M = 50\n",
+    "Z = np.linspace(X.min(), X.max(), M)[:, None]  # Z must be of shape [M, 1]\n",
+    "\n",
+    "inducing_variable = gpf.inducing_variables.SharedIndependentInducingVariables(\n",
+    "    gpf.inducing_variables.InducingPoints(Z),\n",
+    ")\n",
+    "\n",
+    "m_tsvgp = t_SVGP(kernel, likelihood, inducing_variable, num_data=N, num_latent_gps=2)\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7e310744",
+   "metadata": {
+    "cell_marker": "\"\"\"",
+    "lines_to_next_cell": 1
+   },
+   "source": [
+    "## Plot pre-training (a priori) prediction"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b86c850f",
+   "metadata": {
+    "lines_to_next_cell": 2
+   },
+   "outputs": [],
+   "source": [
+    "def plot_distribution(X, Y, loc, scale, index=0):\n",
+    "    plt.figure(figsize=(15, 5))\n",
+    "    x = X.squeeze()\n",
+    "    for k in (1, 2):\n",
+    "        lb = (loc - k * scale).squeeze()\n",
+    "        ub = (loc + k * scale).squeeze()\n",
+    "        plt.fill_between(x, lb, ub, color=\"silver\", alpha=1 - 0.05 * k ** 3)\n",
+    "    plt.plot(x, lb, color=\"silver\")\n",
+    "    plt.plot(x, ub, color=\"silver\")\n",
+    "    plt.plot(X, loc, color=\"black\")\n",
+    "    plt.scatter(X, Y, color=\"gray\", alpha=0.8)\n",
+    "    plt.savefig(\"het.png\")\n",
+    "    plt.show()\n",
+    "\n",
+    "\n",
+    "Ymean, Yvar = m_tsvgp.predict_y(X)\n",
+    "Ymean = Ymean.numpy().squeeze()\n",
+    "Ystd = tf.sqrt(Yvar).numpy().squeeze()\n",
+    "plot_distribution(X, Y, Ymean, Ystd, -1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e13dcbfa",
+   "metadata": {
+    "cell_marker": "\"\"\"",
+    "lines_to_next_cell": 2
+   },
+   "source": [
+    "## Training model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6b7a6070",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "lr_adam = 0.1\n",
+    "lr_natgrad = 0.5\n",
+    "\n",
+    "nit_e = 2\n",
+    "nit_m = 1\n",
+    "\n",
+    "\n",
+    "def E_step():\n",
+    "    [m_tsvgp.natgrad_step((X, Y), lr_natgrad) for _ in range(nit_e)]\n",
+    "\n",
+    "\n",
+    "optimizer = tf.optimizers.Adam(lr_adam)\n",
+    "\n",
+    "\n",
+    "@tf.function\n",
+    "def M_step():\n",
+    "    [\n",
+    "        optimizer.minimize(m_tsvgp.training_loss_closure(data), m_tsvgp.kernel.trainable_variables)\n",
+    "        for _ in range(nit_m)\n",
+    "    ]\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a5116bea",
+   "metadata": {
+    "cell_marker": "\"\"\""
+   },
+   "source": [
+    "## Run Optimization"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bc3d8f57",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "nrep = 100\n",
+    "for r in range(nrep):\n",
+    "    E_step()\n",
+    "    M_step()\n",
+    "    if r % 10 == 0:\n",
+    "        print(r, m_tsvgp.elbo(data))\n",
+    "\n",
+    "\n",
+    "Ymean, Yvar = m_tsvgp.predict_y(X)\n",
+    "Ymean = Ymean.numpy().squeeze()\n",
+    "Ystd = tf.sqrt(Yvar).numpy().squeeze()\n",
+    "plot_distribution(X, Y, Ymean, Ystd, r)"
+   ]
+  }
+ ],
+ "metadata": {
+  "jupytext": {
+   "cell_markers": "\"\"\""
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

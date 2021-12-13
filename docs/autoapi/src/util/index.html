@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>src.util &#8212; t-SVGP 0.0.0 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pydata-custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="src.sites" href="../sites/index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../../../index.html">
+<p class="title">t-SVGP</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../index.html">
+  t-SVGP
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../notebooks.html">
+  Notebooks
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  API Reference
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/AaltoML/t-SVGP" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../sites/index.html">
+   <code class="xref py py-mod docutils literal notranslate">
+    <span class="pre">
+     src.sites
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   <code class="xref py py-mod docutils literal notranslate">
+    <span class="pre">
+     src.util
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-contents">
+   Module Contents
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#src.util.conditional_from_precision_sites_white">
+     conditional_from_precision_sites_white
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#src.util.conditional_from_precision_sites">
+     conditional_from_precision_sites
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#src.util.project_diag_sites">
+     project_diag_sites
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#src.util.kl_from_precision_sites_white">
+     kl_from_precision_sites_white
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#src.util.kl_from_precision_sites">
+     kl_from_precision_sites
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#src.util.posterior_from_dense_site">
+     posterior_from_dense_site
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#src.util.posterior_from_dense_site_white">
+     posterior_from_dense_site_white
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#src.util.gradient_transformation_mean_var_to_expectation">
+     gradient_transformation_mean_var_to_expectation
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="module-src.util">
+<span id="src-util"></span><h1><a class="reference internal" href="#module-src.util" title="src.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.util</span></code></a><a class="headerlink" href="#module-src.util" title="Permalink to this headline">¶</a></h1>
+<p>Utilities for the model classes</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.util.conditional_from_precision_sites_white">
+<span class="sig-name descname"><span class="pre">conditional_from_precision_sites_white</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Kuu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Kff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Kuf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/src/util.html#conditional_from_precision_sites_white"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.util.conditional_from_precision_sites_white" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Given a g₁ and g2, and distribution p and q such that</dt><dd><p>p(g₂) = N(g₂; 0, Kuu)</p>
+<p>p(g₁) = N(g₁; 0, Kff)
+p(g₁ | g₂) = N(g₁; Kfu (Kuu⁻¹) g₂, Kff - Kfu (Kuu⁻¹) Kuf)</p>
+</dd>
+<dt>And  q(g₂) = N(g₂; μ, Σ) such that</dt><dd><p>Σ⁻¹  = Kuu⁻¹  + Kuu⁻¹LLᵀKuu⁻¹
+Σ⁻¹μ = Kuu⁻¹l</p>
+</dd>
+<dt>This method computes the mean and (co)variance of</dt><dd><p>q(g₁) = ∫ q(g₂) p(g₁ | g₂) dg₂ = N(g₂; μ*, Σ**)</p>
+</dd>
+</dl>
+<p>with
+Σ** = k** - kfu Kuu⁻¹ kuf - kfu Kuu⁻¹ Σ Kuu⁻¹ kuf</p>
+<blockquote>
+<div><p>= k** - kfu Kuu⁻¹kuf + kfu (Kuu + LLᵀ)⁻¹ kuf</p>
+</div></blockquote>
+<dl class="simple">
+<dt>μ* = k*u Kuu⁻¹ m</dt><dd><p>= k*u Kuu⁻¹ Λ⁻¹ Kuu⁻¹ l
+= k*u (Kuu + LLᵀ)⁻¹ l</p>
+</dd>
+</dl>
+<p>Inputs:
+:param Kuu: tensor M x M
+:param Kff: tensor N x 1
+:param Kuf: tensor M x N
+:param L: tensor L x M x M
+:param l: tensor M x L</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.util.conditional_from_precision_sites">
+<span class="sig-name descname"><span class="pre">conditional_from_precision_sites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Kuu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Kff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Kuf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/src/util.html#conditional_from_precision_sites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.util.conditional_from_precision_sites" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Given a g₁ and g2, and distribution p and q such that</dt><dd><p>p(g₂) = N(g₂; 0, Kuu)</p>
+<p>p(g₁) = N(g₁; 0, Kff)
+p(g₁ | g₂) = N(g₁; Kfu (Kuu⁻¹) g₂, Kff - Kfu (Kuu⁻¹) Kuf)</p>
+</dd>
+<dt>And  q(g₂) = N(g₂; μ, Σ) such that</dt><dd><p>Σ⁻¹  = Kuu⁻¹  + LLᵀ
+Σ⁻¹μ = l</p>
+</dd>
+<dt>This method computes the mean and (co)variance of</dt><dd><p>q(g₁) = ∫ q(g₂) p(g₁ | g₂) dg₂ = N(g₂; μ*, Σ**)</p>
+</dd>
+</dl>
+<p>with
+Σ** = k** - kfu Kuu⁻¹ kuf - kfu Kuu⁻¹ Σ Kuu⁻¹ kuf</p>
+<blockquote>
+<div><p>= k** - kfu Kuu⁻¹kuf + kfu Kuu⁻¹ (Kuu⁻¹  + LLᵀ)⁻¹ Kuu⁻¹ kuf
+= k** - kfu Kuu⁻¹kuf + kfu Kuu⁻¹ (Kuu - Kuu L(I + LᵀKuuL)⁻¹Lᵀ Kuu) Kuu⁻¹ kuf
+= k** - kfu L(I + LᵀKuuL)⁻¹Lᵀ kuf
+= k** - kfu LW⁻¹Lᵀ kuf
+= k** - kfu L Lw⁻ᵀLw⁻¹ Lᵀ kuf
+= k** - (Lw⁻¹ Lᵀ kuf)ᵀ Lw⁻¹ Lᵀ kuf
+= k** - (D kuf)ᵀ D kuf</p>
+</div></blockquote>
+<dl class="simple">
+<dt>μ* = k*u Kuu⁻¹ m</dt><dd><p>= k*u Kuu⁻¹ Σ l
+= k*u Kuu⁻¹ (Kuu⁻¹  + LLᵀ)⁻¹ l
+= k*u Kuu⁻¹ (Kuu - Kuu L(I + LᵀKuuL)⁻¹Lᵀ Kuu) l
+= k*u l - k*u L(I + LᵀKuuL)⁻¹Lᵀ Kuu l
+= k*u l - k*u LW⁻¹Lᵀ Kuu l
+= k*u l - (Lw⁻¹ Lᵀ kuf)ᵀ Lw⁻¹ Lᵀ Kuu l
+= k*u l - (D kuf)ᵀ D Kuu l</p>
+</dd>
+</dl>
+<p>Inputs:
+:param Kuu: tensor M x M
+:param Kff: tensor N x 1
+:param Kuf: tensor M x N
+:param L: tensor L x M x M
+:param l: tensor M x L</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.util.project_diag_sites">
+<span class="sig-name descname"><span class="pre">project_diag_sites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Kuf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">Kuu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Tensor" title="(in TensorFlow v2.4)"><span class="pre">tf.Tensor</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cholesky</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/src/util.html#project_diag_sites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.util.project_diag_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>From  Kuu, Kuf, λ₁, λ₂, computes statistics
+L = Kuu⁻¹ (Σₙ Kufₙ λ₂ₙ Kfₙu) Kuu⁻¹
+l = Kuu⁻¹ (Σₙ Kufₙ λ₁ₙ)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Kuf</strong> – L x M x N</p></li>
+<li><p><strong>lambda_2</strong> – N x L</p></li>
+<li><p><strong>lambda_1</strong> – N x L</p></li>
+<li><p><strong>Kuu</strong> – L x M x M</p></li>
+</ul>
+</dd>
+</dl>
+<p>return:
+l : M x L
+L : L x M x M</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.util.kl_from_precision_sites_white">
+<span class="sig-name descname"><span class="pre">kl_from_precision_sites_white</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/src/util.html#kl_from_precision_sites_white"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.util.kl_from_precision_sites_white" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the kl divergence KL[q(f)|p(f)]</p>
+<p>where:
+q(f) = N(μ,Σ) and covariance of a Gaussian with natural parameters
+with</p>
+<blockquote>
+<div><p>Σ = Λ⁻¹  = (A⁻¹  + A⁻¹LLᵀA⁻¹)⁻¹  = A(A + LLᵀ)⁻¹A
+μ = Λ⁻¹ A⁻¹l = Σ A⁻¹l</p>
+</div></blockquote>
+<p>p(f) = N(0,A)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.util.kl_from_precision_sites">
+<span class="sig-name descname"><span class="pre">kl_from_precision_sites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/src/util.html#kl_from_precision_sites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.util.kl_from_precision_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the kl divergence KL[q(f)|p(f)]</p>
+<p>where:
+q(f) = N(μ,Σ) and covariance of a Gaussian with natural parameters
+with</p>
+<blockquote>
+<div><p>Σ = Λ⁻¹  = (A⁻¹  + A⁻¹LLᵀA⁻¹)⁻¹  = A(A + LLᵀ)⁻¹A
+μ = Λ⁻¹ A⁻¹l = Σ A⁻¹l</p>
+</div></blockquote>
+<p>p(f) = N(0,A)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.util.posterior_from_dense_site">
+<span class="sig-name descname"><span class="pre">posterior_from_dense_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_2_sqrt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/src/util.html#posterior_from_dense_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.util.posterior_from_dense_site" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the mean and cholesky factor of the density q(u) = p(u)t(u) = 𝓝(u; m, S)
+where p(u) = 𝓝(u; 0, K) and t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)</p>
+<p>P = -2Λ₂</p>
+<p>S = (K⁻¹ + P)⁻¹ = (K⁻¹ + LLᵀ)⁻¹ = K - KLW⁻¹LᵀK , W = (I + LᵀKL)
+m = S λ₁</p>
+<p>Input:
+:param: K : M x M
+:param: lambda_1: M x P
+:param: lambda_2: P x M x M</p>
+<p>Output:
+m: M x P
+chol_S: P x M x M</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.util.posterior_from_dense_site_white">
+<span class="sig-name descname"><span class="pre">posterior_from_dense_site_white</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/src/util.html#posterior_from_dense_site_white"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.util.posterior_from_dense_site_white" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the mean and cholesky factor of the density q(u) = p(u)t(u) = 𝓝(u; m, S)
+where p(u) = 𝓝(u; 0, K) and t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)</p>
+<p>S = Λ₂⁻¹ = (K⁻¹ + K⁻¹PK⁻¹)⁻¹ = = [K⁻¹(K + P)K⁻¹]⁻¹  = K(K + P)⁻¹K
+m = S K⁻¹λ₁ = K(K + LLᵀ)⁻¹λ₁</p>
+<p>Input:
+:param: K : M x M
+:param: lambda_1: M x P
+:param: lambda_2: P x M x M</p>
+<p>Output:
+m: M x P
+chol_S: P x M x M</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.util.gradient_transformation_mean_var_to_expectation">
+<span class="sig-name descname"><span class="pre">gradient_transformation_mean_var_to_expectation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grads</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/src/util.html#gradient_transformation_mean_var_to_expectation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.util.gradient_transformation_mean_var_to_expectation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms gradient 𝐠 of a function wrt [μ, σ²]
+into its gradients wrt to [μ, σ² + μ²]
+:param inputs: [μ, σ²]
+:param grads: 𝐠
+Output:
+▽μ</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright .<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

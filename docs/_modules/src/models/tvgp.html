@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>src.models.tvgp &#8212; t-SVGP 0.0.0 documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pydata-custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../../../index.html">
+<p class="title">t-SVGP</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../index.html">
+  t-SVGP
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../notebooks.html">
+  Notebooks
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../autoapi/src/index.html">
+  API Reference
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/AaltoML/t-SVGP" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for src.models.tvgp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module for the t-VGP model class</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">gpflow.config</span> <span class="kn">import</span> <span class="n">default_float</span><span class="p">,</span> <span class="n">default_jitter</span>
+<span class="kn">from</span> <span class="nn">gpflow.kernels</span> <span class="kn">import</span> <span class="n">Kernel</span>
+<span class="kn">from</span> <span class="nn">gpflow.likelihoods</span> <span class="kn">import</span> <span class="n">Likelihood</span>
+<span class="kn">from</span> <span class="nn">gpflow.mean_functions</span> <span class="kn">import</span> <span class="n">MeanFunction</span>
+<span class="kn">from</span> <span class="nn">gpflow.models.model</span> <span class="kn">import</span> <span class="n">GPModel</span><span class="p">,</span> <span class="n">InputData</span><span class="p">,</span> <span class="n">MeanAndVariance</span><span class="p">,</span> <span class="n">RegressionData</span>
+<span class="kn">from</span> <span class="nn">gpflow.models.training_mixins</span> <span class="kn">import</span> <span class="n">InternalDataTrainingLossMixin</span>
+
+<span class="kn">from</span> <span class="nn">src.sites</span> <span class="kn">import</span> <span class="n">DiagSites</span>
+
+
+<div class="viewcode-block" id="t_VGP"><a class="viewcode-back" href="../../../autoapi/src/models/tvgp/index.html#src.models.tvgp.t_VGP">[docs]</a><span class="k">class</span> <span class="nc">t_VGP</span><span class="p">(</span><span class="n">GPModel</span><span class="p">,</span> <span class="n">InternalDataTrainingLossMixin</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This method approximates the Gaussian process posterior using a multivariate Gaussian.</span>
+
+<span class="sd">    The idea is that the posterior over the function-value vector F is</span>
+<span class="sd">    approximated by a Gaussian, and the KL divergence is minimised between</span>
+<span class="sd">    the approximation and the posterior.</span>
+
+<span class="sd">    The key reference is:</span>
+<span class="sd">      Khan, M., &amp; Lin, W. (2017). Conjugate-Computation Variational Inference:</span>
+<span class="sd">      Converting Variational Inference in Non-Conjugate Models to Inferences in Conjugate Models.</span>
+<span class="sd">      In Artificial Intelligence and Statistics (pp. 878-887).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">RegressionData</span><span class="p">,</span>
+        <span class="n">kernel</span><span class="p">:</span> <span class="n">Kernel</span><span class="p">,</span>
+        <span class="n">likelihood</span><span class="p">:</span> <span class="n">Likelihood</span><span class="p">,</span>
+        <span class="n">mean_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MeanFunction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_latent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        X is a data matrix, size [N, D]</span>
+<span class="sd">        Y is a data matrix, size [N, R]</span>
+<span class="sd">        kernel, likelihood, mean_function are appropriate GPflow objects</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">likelihood</span><span class="p">,</span> <span class="n">mean_function</span><span class="p">,</span> <span class="n">num_latent</span><span class="p">)</span>
+
+        <span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">num_data</span> <span class="o">=</span> <span class="n">x_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_data</span> <span class="o">=</span> <span class="n">num_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_latent</span> <span class="o">=</span> <span class="n">num_latent</span> <span class="ow">or</span> <span class="n">y_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="n">lambda_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_latent</span><span class="p">))</span>
+        <span class="n">lambda_2</span> <span class="o">=</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">num_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_latent</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="n">DiagSites</span><span class="p">(</span><span class="n">lambda_1</span><span class="p">,</span> <span class="n">lambda_2</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="t_VGP.lambda_1"><a class="viewcode-back" href="../../../autoapi/src/models/tvgp/index.html#src.models.tvgp.t_VGP.lambda_1">[docs]</a>    <span class="k">def</span> <span class="nf">lambda_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;first natural parameter&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">lambda_1</span></div>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="t_VGP.lambda_2"><a class="viewcode-back" href="../../../autoapi/src/models/tvgp/index.html#src.models.tvgp.t_VGP.lambda_2">[docs]</a>    <span class="k">def</span> <span class="nf">lambda_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;second natural parameter&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">lambda_2</span></div>
+
+<div class="viewcode-block" id="t_VGP.maximum_log_likelihood_objective"><a class="viewcode-back" href="../../../autoapi/src/models/tvgp/index.html#src.models.tvgp.t_VGP.maximum_log_likelihood_objective">[docs]</a>    <span class="k">def</span> <span class="nf">maximum_log_likelihood_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elbo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="t_VGP.elbo"><a class="viewcode-back" href="../../../autoapi/src/models/tvgp/index.html#src.models.tvgp.t_VGP.elbo">[docs]</a>    <span class="k">def</span> <span class="nf">elbo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This gives a variational bound (the evidence lower bound or ELBO) on</span>
+<span class="sd">        the log marginal likelihood of the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">pseudo_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_2</span>
+        <span class="n">sW</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_2</span><span class="p">))</span>
+
+        <span class="c1"># Computes conversion λ₁, λ₂ → m, V by using q(f) ≃ t(f)p(f)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span> <span class="o">+</span> <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_float</span><span class="p">())</span> <span class="o">*</span> <span class="n">default_jitter</span><span class="p">()</span>
+        <span class="c1"># L = chol(I  + √λ₂ᵀ K √λ₂ᵀ)</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">sW</span> <span class="o">@</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">sW</span><span class="p">))</span> <span class="o">*</span> <span class="n">K</span>
+        <span class="p">)</span>
+        <span class="c1"># T = L⁻¹ λ₂ K</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">sW</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_data</span><span class="p">))</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span>
+        <span class="c1"># Σ = (K⁻¹ + λ₂)⁻¹  = K - K √λ₂ (I  + √λ₂ᵀ K √λ₂ᵀ)⁻¹ √λ₂ᵀ K =  K - K √λ₂L⁻ᵀL⁻¹√λ₂ᵀ K</span>
+        <span class="n">post_v</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">diag_part</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">T</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># Σ = (K⁻¹ + λ₂)⁻¹ = (K⁻¹(I + λ₂K))⁻¹ = K (I + λ₂K)⁻¹ = K L⁻ᵀL⁻¹</span>
+        <span class="c1"># μ =  Σ λ₁ = K L⁻ᵀL⁻¹ λ₂ (λ₂⁻¹λ₁) = K α</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">sW</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">L</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">sW</span> <span class="o">*</span> <span class="n">pseudo_y</span><span class="p">))</span>
+        <span class="n">post_m</span> <span class="o">=</span> <span class="n">K</span> <span class="o">@</span> <span class="n">alpha</span>
+        <span class="c1"># Store alpha for prediction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+        <span class="c1"># Get variational expectations.</span>
+        <span class="c1"># ELBO = E_q log(p(y,f)/q(t)) = E_q log(p(y|f)p(f))/Z⁻¹ p(f)t(f))</span>
+        <span class="c1"># = log(Z) - E_q log t(f) + E_q log p(y|f)</span>
+        <span class="c1"># log_Z = \int p(f)t(f)df</span>
+        <span class="n">E_q_log_lik</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">likelihood</span><span class="o">.</span><span class="n">variational_expectations</span><span class="p">(</span><span class="n">post_m</span><span class="p">,</span> <span class="n">post_v</span><span class="p">,</span> <span class="n">y_data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">E_q_log_t</span> <span class="o">=</span> <span class="o">-</span><span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_2</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">pseudo_y</span> <span class="o">-</span> <span class="n">post_m</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">post_v</span><span class="p">))</span>
+        <span class="n">log_Z</span> <span class="o">=</span> <span class="o">-</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">pseudo_y</span><span class="p">)</span> <span class="o">@</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">diag_part</span><span class="p">(</span><span class="n">L</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">elbo</span> <span class="o">=</span> <span class="n">log_Z</span> <span class="o">-</span> <span class="n">E_q_log_t</span> <span class="o">+</span> <span class="n">E_q_log_lik</span>
+        <span class="k">return</span> <span class="n">elbo</span></div>
+
+<div class="viewcode-block" id="t_VGP.update_variational_parameters"><a class="viewcode-back" href="../../../autoapi/src/models/tvgp/index.html#src.models.tvgp.t_VGP.update_variational_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">update_variational_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Takes natural gradient step in Variational parameters in the local parameters</span>
+<span class="sd">        λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁</span>
+<span class="sd">        Input:</span>
+<span class="sd">        :param: X : N x D</span>
+<span class="sd">        :param: Y:  N x 1</span>
+<span class="sd">        :param: lr: Scalar</span>
+
+<span class="sd">        Output:</span>
+<span class="sd">        Updates the params</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">pseudo_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_2</span>
+        <span class="n">sW</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda_2</span><span class="p">))</span>
+
+        <span class="c1"># Computes conversion λ₁, λ₂ → m, V by using q(f) ≃ t(f)p(f)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span> <span class="o">+</span> <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_float</span><span class="p">())</span> <span class="o">*</span> <span class="n">default_jitter</span><span class="p">()</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">sW</span> <span class="o">@</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">sW</span><span class="p">))</span> <span class="o">*</span> <span class="n">K</span>
+        <span class="p">)</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">sW</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_data</span><span class="p">))</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span>
+        <span class="n">post_v</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">diag_part</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">T</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">sW</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">L</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">sW</span> <span class="o">*</span> <span class="n">pseudo_y</span><span class="p">))</span>
+        <span class="n">post_m</span> <span class="o">=</span> <span class="n">K</span> <span class="o">@</span> <span class="n">alpha</span>
+
+        <span class="c1"># Keep alphas updated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+        <span class="c1"># Get variational expectations derivatives.</span>
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">(</span><span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">g</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">post_m</span><span class="p">)</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">post_v</span><span class="p">)</span>
+            <span class="n">var_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">likelihood</span><span class="o">.</span><span class="n">variational_expectations</span><span class="p">(</span><span class="n">post_m</span><span class="p">,</span> <span class="n">post_v</span><span class="p">,</span> <span class="n">y_data</span><span class="p">)</span>
+
+        <span class="n">d_exp_dm</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">var_exp</span><span class="p">,</span> <span class="n">post_m</span><span class="p">)</span>
+        <span class="n">d_exp_dv</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">var_exp</span><span class="p">,</span> <span class="n">post_v</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">g</span>
+
+        <span class="c1"># Take the tVGP step and transform to be ▽μ[Var_exp]</span>
+        <span class="n">lambda_1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_1</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="p">(</span><span class="n">d_exp_dm</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">d_exp_dv</span> <span class="o">*</span> <span class="n">post_m</span><span class="p">))</span>
+        <span class="n">lambda_2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_2</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">d_exp_dv</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_1</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">lambda_1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda_2</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">lambda_2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="t_VGP.predict_f"><a class="viewcode-back" href="../../../autoapi/src/models/tvgp/index.html#src.models.tvgp.t_VGP.predict_f">[docs]</a>    <span class="k">def</span> <span class="nf">predict_f</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">Xnew</span><span class="p">:</span> <span class="n">InputData</span><span class="p">,</span> <span class="n">full_cov</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">full_output_cov</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MeanAndVariance</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The posterior variance of F is given by</span>
+<span class="sd">            q(f) = N(f | K alpha + mean, [K⁻¹ + diag(lambda²)]⁻¹)</span>
+<span class="sd">        Here we project this to F*, the values of the GP at Xnew which is given</span>
+<span class="sd">        by</span>
+<span class="sd">           q(F*) = N ( F* | K_{*F} alpha + mean, K_{**} - K_{*f}[K_{ff} +</span>
+<span class="sd">                                           diag(lambda⁻²)]⁻¹ K_{f*} )</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">full_output_cov</span> <span class="ow">is</span> <span class="kc">False</span>
+        <span class="n">x_data</span><span class="p">,</span> <span class="n">_y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="c1"># Evaluate the kernel</span>
+        <span class="n">Kx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">Xnew</span><span class="p">)</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span>
+
+        <span class="c1"># Predictive mean</span>
+        <span class="n">f_mean</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">Kx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_alpha</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_function</span><span class="p">(</span><span class="n">Xnew</span><span class="p">)</span>
+
+        <span class="c1"># Predictive var</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">K</span> <span class="o">+</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_2</span><span class="p">))</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="n">Kx_tiled</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">Kx</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">num_latent</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">LiKx</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">Kx_tiled</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_cov</span><span class="p">:</span>
+            <span class="n">f_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">Xnew</span><span class="p">)</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">LiKx</span><span class="p">,</span> <span class="n">LiKx</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">Xnew</span><span class="p">,</span> <span class="n">full_cov</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">LiKx</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f_mean</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">f_var</span><span class="p">)</span></div></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright .<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

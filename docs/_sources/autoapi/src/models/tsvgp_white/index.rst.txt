@@ -1,0 +1,85 @@
+:py:mod:`src.models.tsvgp_white`
+================================
+
+.. py:module:: src.models.tsvgp_white
+
+.. autoapi-nested-parse::
+
+   Module for the t-SVGP model with whitened parameterization
+
+
+
+Module Contents
+---------------
+
+.. py:class:: t_SVGP_white(kernel, likelihood, inducing_variable, *, mean_function=None, num_latent_gps: int = 1, lambda_1=None, lambda_2=None, num_data=None)
+
+   Bases: :py:obj:`gpflow.models.GPModel`
+
+   Class for the t-SVGP model with whitened paramterization
+
+   - kernel, likelihood, inducing_variables, mean_function are appropriate
+     GPflow objects
+   - num_latent_gps is the number of latent processes to use, defaults to 1
+   - q_diag is a boolean. If True, the covariance is approximated by a
+     diagonal matrix.
+   - whiten is a boolean. If True, we use the whitened representation of
+     the inducing points.
+   - num_data is the total number of observations, defaults to X.shape[0]
+     (relevant when feeding in external minibatches)
+
+   .. py:method:: _init_variational_parameters(self, num_inducing, lambda_1, lambda_2)
+
+      Constructs the site parameters λ₁, Λ₂.
+      for site t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)
+
+      Parameters
+      ----------
+      :param num_inducing: int
+          Number of inducing variables, typically referred to as M.
+      :param lambda_1: np.array or None
+          First order natural parameter of the variational site.
+      :param lambda_2_sqrt: np.array or None
+          Second order natural parameter of the variational site.
+
+
+   .. py:method:: get_mean_chol_cov_inducing_posterior(self)
+
+      Computes the mean and cholesky factor of the posterior
+      on the inducing variables q(u) = 𝓝(u; m, S)
+      S = (K⁻¹ + Λ₂)⁻¹ = (K⁻¹ + L₂L₂ᵀ)⁻¹ = K - KL₂W⁻¹L₂ᵀK , W = (I + L₂ᵀKL₂)⁻¹
+      m = S λ₁
+
+
+   .. py:method:: predict_f_extra_data(self, Xnew: gpflow.models.training_mixins.InputData, extra_data=RegressionData, jitter=default_jitter()) -> gpflow.types.MeanAndVariance
+
+      Compute the mean and variance of the latent function at some new points
+      Xnew.
+
+
+   .. py:method:: elbo(self, data: gpflow.models.model.RegressionData) -> tensorflow.Tensor
+
+      This gives a variational bound (the evidence lower bound or ELBO) on
+      the log marginal likelihood of the model.
+
+
+   .. py:method:: maximum_log_likelihood_objective(self) -> tensorflow.Tensor
+
+      The variational lower bound
+
+
+   .. py:method:: natgrad_step(self, dataset, lr=0.1, jitter=1e-09)
+
+      Takes natural gradient step in Variational parameters in the local parameters
+      λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
+
+      Input:
+      :param: X : N x D
+      :param: Y:  N x 1
+      :param: lr: Scalar
+
+      Output:
+      Updates the params
+
+
+

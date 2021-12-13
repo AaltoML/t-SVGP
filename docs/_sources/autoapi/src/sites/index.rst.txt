@@ -1,0 +1,57 @@
+:py:mod:`src.sites`
+===================
+
+.. py:module:: src.sites
+
+.. autoapi-nested-parse::
+
+   Module to declare Gaussian Exponential Family sites objects.
+
+
+
+Module Contents
+---------------
+
+.. py:class:: Sites(name: Optional[str] = None)
+
+   Bases: :py:obj:`gpflow.base.Module`
+
+   The base sites class
+
+   :param name: optional kernel name.
+
+
+.. py:class:: DiagSites(lambda_1, lambda_2, name: Optional[str] = None)
+
+   Bases: :py:obj:`Sites`
+
+   Sites with diagonal lambda_2
+
+   :param lambda_1: first order natural parameter
+   :param lambda_2: second order natural parameter
+   :param name: optional kernel name.
+
+
+.. py:class:: DenseSites(lambda_1, lambda_2_sqrt=None, lambda_2=None, name: Optional[str] = None)
+
+   Bases: :py:obj:`Sites`
+
+   Sites with dense lambda_2 save as a Cholesky factor
+
+   :param lambda_1: first order natural parameter
+   :param lambda_2_sqrt: second order natural parameter
+   :param name: optional kernel name.
+
+   .. py:method:: lambda_2(self)
+      :property:
+
+      second natural parameter
+
+
+   .. py:method:: lambda_2_sqrt(self)
+      :property:
+
+      Cholesky factor of the second natural parameter
+
+
+

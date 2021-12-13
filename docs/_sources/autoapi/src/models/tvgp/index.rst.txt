@@ -1,0 +1,86 @@
+:py:mod:`src.models.tvgp`
+=========================
+
+.. py:module:: src.models.tvgp
+
+.. autoapi-nested-parse::
+
+   Module for the t-VGP model class
+
+
+
+Module Contents
+---------------
+
+.. py:class:: t_VGP(data: gpflow.models.model.RegressionData, kernel: gpflow.kernels.Kernel, likelihood: gpflow.likelihoods.Likelihood, mean_function: Optional[gpflow.mean_functions.MeanFunction] = None, num_latent: Optional[int] = 1)
+
+   Bases: :py:obj:`gpflow.models.model.GPModel`, :py:obj:`gpflow.models.training_mixins.InternalDataTrainingLossMixin`
+
+   This method approximates the Gaussian process posterior using a multivariate Gaussian.
+
+   The idea is that the posterior over the function-value vector F is
+   approximated by a Gaussian, and the KL divergence is minimised between
+   the approximation and the posterior.
+
+   The key reference is:
+     Khan, M., & Lin, W. (2017). Conjugate-Computation Variational Inference:
+     Converting Variational Inference in Non-Conjugate Models to Inferences in Conjugate Models.
+     In Artificial Intelligence and Statistics (pp. 878-887).
+
+
+   X is a data matrix, size [N, D]
+   Y is a data matrix, size [N, R]
+   kernel, likelihood, mean_function are appropriate GPflow objects
+
+
+   .. py:method:: lambda_1(self)
+      :property:
+
+      first natural parameter
+
+
+   .. py:method:: lambda_2(self)
+      :property:
+
+      second natural parameter
+
+
+   .. py:method:: maximum_log_likelihood_objective(self, *args, **kwargs) -> tensorflow.Tensor
+
+      Objective for maximum likelihood estimation. Should be maximized. E.g.
+      log-marginal likelihood (hyperparameter likelihood) for GPR, or lower
+      bound to the log-marginal likelihood (ELBO) for sparse and variational
+      GPs.
+
+
+   .. py:method:: elbo(self) -> tensorflow.Tensor
+
+      This gives a variational bound (the evidence lower bound or ELBO) on
+      the log marginal likelihood of the model.
+
+
+   .. py:method:: update_variational_parameters(self, beta=0.05) -> tensorflow.Tensor
+
+      Takes natural gradient step in Variational parameters in the local parameters
+      λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
+      Input:
+      :param: X : N x D
+      :param: Y:  N x 1
+      :param: lr: Scalar
+
+      Output:
+      Updates the params
+
+
+   .. py:method:: predict_f(self, Xnew: gpflow.models.model.InputData, full_cov: bool = False, full_output_cov: bool = False) -> gpflow.models.model.MeanAndVariance
+
+      The posterior variance of F is given by
+          q(f) = N(f | K alpha + mean, [K⁻¹ + diag(lambda²)]⁻¹)
+      Here we project this to F*, the values of the GP at Xnew which is given
+      by
+         q(F*) = N ( F* | K_{*F} alpha + mean, K_{**} - K_{*f}[K_{ff} +
+                                         diag(lambda⁻²)]⁻¹ K_{f*} )
+
+
+
+

@@ -1,0 +1,619 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>src.util &#8212; t-SVGP 0.0.0 documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pydata-custom.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../../index.html">
+<p class="title">t-SVGP</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../index.html">
+  t-SVGP
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../notebooks.html">
+  Notebooks
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../autoapi/src/index.html">
+  API Reference
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/AaltoML/t-SVGP" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for src.util</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utilities for the model classes</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">gpflow</span> <span class="kn">import</span> <span class="n">default_float</span>
+
+
+<div class="viewcode-block" id="conditional_from_precision_sites_white"><a class="viewcode-back" href="../../autoapi/src/util/index.html#src.util.conditional_from_precision_sites_white">[docs]</a><span class="k">def</span> <span class="nf">conditional_from_precision_sites_white</span><span class="p">(</span>
+    <span class="n">Kuu</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">Kff</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">Kuf</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">l</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">L</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">L2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">jitter</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a g₁ and g2, and distribution p and q such that</span>
+<span class="sd">      p(g₂) = N(g₂; 0, Kuu)</span>
+
+<span class="sd">      p(g₁) = N(g₁; 0, Kff)</span>
+<span class="sd">      p(g₁ | g₂) = N(g₁; Kfu (Kuu⁻¹) g₂, Kff - Kfu (Kuu⁻¹) Kuf)</span>
+
+<span class="sd">    And  q(g₂) = N(g₂; μ, Σ) such that</span>
+<span class="sd">        Σ⁻¹  = Kuu⁻¹  + Kuu⁻¹LLᵀKuu⁻¹</span>
+<span class="sd">        Σ⁻¹μ = Kuu⁻¹l</span>
+
+<span class="sd">    This method computes the mean and (co)variance of</span>
+<span class="sd">      q(g₁) = ∫ q(g₂) p(g₁ | g₂) dg₂ = N(g₂; μ*, Σ**)</span>
+
+<span class="sd">    with</span>
+<span class="sd">    Σ** = k** - kfu Kuu⁻¹ kuf - kfu Kuu⁻¹ Σ Kuu⁻¹ kuf</span>
+<span class="sd">        = k** - kfu Kuu⁻¹kuf + kfu (Kuu + LLᵀ)⁻¹ kuf</span>
+<span class="sd">    μ* = k*u Kuu⁻¹ m</span>
+<span class="sd">       = k*u Kuu⁻¹ Λ⁻¹ Kuu⁻¹ l</span>
+<span class="sd">       = k*u (Kuu + LLᵀ)⁻¹ l</span>
+
+<span class="sd">    Inputs:</span>
+<span class="sd">    :param Kuu: tensor M x M</span>
+<span class="sd">    :param Kff: tensor N x 1</span>
+<span class="sd">    :param Kuf: tensor M x N</span>
+<span class="sd">    :param L: tensor L x M x M</span>
+<span class="sd">    :param l: tensor M x L</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">shape_constraints</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">Kuu</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">Kuf</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">Kff</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">]),</span>
+    <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">L2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">L2</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">L</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span>
+        <span class="p">)</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">debugging</span><span class="o">.</span><span class="n">assert_shapes</span><span class="p">(</span>
+        <span class="n">shape_constraints</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;conditional_from_precision_sites() arguments &quot;</span>
+        <span class="s2">&quot;[Note that this check verifies the shape of an alternative &quot;</span>
+        <span class="s2">&quot;representation of Kmn. See the docs for the actual expected &quot;</span>
+        <span class="s2">&quot;shape.]&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">L2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">L2</span> <span class="o">=</span> <span class="n">L</span> <span class="o">@</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">Kuu</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">L2</span> <span class="o">+</span> <span class="n">Kuu</span> <span class="o">+</span> <span class="n">I</span> <span class="o">*</span> <span class="n">jitter</span>
+    <span class="n">LR</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="n">LA</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">Kuu</span><span class="p">)[</span><span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">tmp1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">triangular_solve</span><span class="p">(</span><span class="n">LR</span><span class="p">,</span> <span class="n">Kuf</span><span class="p">)</span>
+    <span class="n">tmp2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">triangular_solve</span><span class="p">(</span><span class="n">LA</span><span class="p">,</span> <span class="n">Kuf</span><span class="p">)</span>
+
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">Kff</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tmp2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tmp1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">Kuf</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky_solve</span><span class="p">(</span><span class="n">LR</span><span class="p">,</span> <span class="n">l</span><span class="p">),</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">mean</span><span class="p">,</span> <span class="n">cov</span></div>
+
+
+<div class="viewcode-block" id="conditional_from_precision_sites"><a class="viewcode-back" href="../../autoapi/src/util/index.html#src.util.conditional_from_precision_sites">[docs]</a><span class="k">def</span> <span class="nf">conditional_from_precision_sites</span><span class="p">(</span>
+    <span class="n">Kuu</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">Kff</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">Kuf</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">l</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">L</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">L2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a g₁ and g2, and distribution p and q such that</span>
+<span class="sd">      p(g₂) = N(g₂; 0, Kuu)</span>
+
+<span class="sd">      p(g₁) = N(g₁; 0, Kff)</span>
+<span class="sd">      p(g₁ | g₂) = N(g₁; Kfu (Kuu⁻¹) g₂, Kff - Kfu (Kuu⁻¹) Kuf)</span>
+
+<span class="sd">    And  q(g₂) = N(g₂; μ, Σ) such that</span>
+<span class="sd">        Σ⁻¹  = Kuu⁻¹  + LLᵀ</span>
+<span class="sd">        Σ⁻¹μ = l</span>
+
+<span class="sd">    This method computes the mean and (co)variance of</span>
+<span class="sd">      q(g₁) = ∫ q(g₂) p(g₁ | g₂) dg₂ = N(g₂; μ*, Σ**)</span>
+
+<span class="sd">    with</span>
+<span class="sd">    Σ** = k** - kfu Kuu⁻¹ kuf - kfu Kuu⁻¹ Σ Kuu⁻¹ kuf</span>
+<span class="sd">        = k** - kfu Kuu⁻¹kuf + kfu Kuu⁻¹ (Kuu⁻¹  + LLᵀ)⁻¹ Kuu⁻¹ kuf</span>
+<span class="sd">        = k** - kfu Kuu⁻¹kuf + kfu Kuu⁻¹ (Kuu - Kuu L(I + LᵀKuuL)⁻¹Lᵀ Kuu) Kuu⁻¹ kuf</span>
+<span class="sd">        = k** - kfu L(I + LᵀKuuL)⁻¹Lᵀ kuf</span>
+<span class="sd">        = k** - kfu LW⁻¹Lᵀ kuf</span>
+<span class="sd">        = k** - kfu L Lw⁻ᵀLw⁻¹ Lᵀ kuf</span>
+<span class="sd">        = k** - (Lw⁻¹ Lᵀ kuf)ᵀ Lw⁻¹ Lᵀ kuf</span>
+<span class="sd">        = k** - (D kuf)ᵀ D kuf</span>
+
+<span class="sd">    μ* = k*u Kuu⁻¹ m</span>
+<span class="sd">       = k*u Kuu⁻¹ Σ l</span>
+<span class="sd">       = k*u Kuu⁻¹ (Kuu⁻¹  + LLᵀ)⁻¹ l</span>
+<span class="sd">       = k*u Kuu⁻¹ (Kuu - Kuu L(I + LᵀKuuL)⁻¹Lᵀ Kuu) l</span>
+<span class="sd">       = k*u l - k*u L(I + LᵀKuuL)⁻¹Lᵀ Kuu l</span>
+<span class="sd">       = k*u l - k*u LW⁻¹Lᵀ Kuu l</span>
+<span class="sd">       = k*u l - (Lw⁻¹ Lᵀ kuf)ᵀ Lw⁻¹ Lᵀ Kuu l</span>
+<span class="sd">       = k*u l - (D kuf)ᵀ D Kuu l</span>
+
+<span class="sd">    Inputs:</span>
+<span class="sd">    :param Kuu: tensor M x M</span>
+<span class="sd">    :param Kff: tensor N x 1</span>
+<span class="sd">    :param Kuf: tensor M x N</span>
+<span class="sd">    :param L: tensor L x M x M</span>
+<span class="sd">    :param l: tensor M x L</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">shape_constraints</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">Kuu</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">Kuf</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">Kff</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">]),</span>
+    <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">L2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">L2</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">L</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span>
+        <span class="p">)</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">debugging</span><span class="o">.</span><span class="n">assert_shapes</span><span class="p">(</span>
+        <span class="n">shape_constraints</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;conditional_from_precision_sites() arguments &quot;</span>
+        <span class="s2">&quot;[Note that this check verifies the shape of an alternative &quot;</span>
+        <span class="s2">&quot;representation of Kmn. See the docs for the actual expected &quot;</span>
+        <span class="s2">&quot;shape.]&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">L</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">Kuu</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">Id</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_float</span><span class="p">())</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">Kuu</span><span class="p">)</span>
+
+    <span class="c1"># W = I + Lₜᵀ Lₚ Lₚᵀ Lₜ, chol(W)</span>
+    <span class="n">CtL</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">Id</span> <span class="o">+</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">CtL</span><span class="p">,</span> <span class="n">CtL</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">chol_W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+
+    <span class="n">D</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">triangular_solve</span><span class="p">(</span><span class="n">chol_W</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">L</span><span class="p">))</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">Kuf</span><span class="p">)</span>
+
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">Kuf</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">Kuu</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">l</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]))</span> <span class="o">*</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">2</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">Kff</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tmp</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">mean</span><span class="p">,</span> <span class="n">cov</span></div>
+
+
+<div class="viewcode-block" id="project_diag_sites"><a class="viewcode-back" href="../../autoapi/src/util/index.html#src.util.project_diag_sites">[docs]</a><span class="k">def</span> <span class="nf">project_diag_sites</span><span class="p">(</span>
+    <span class="n">Kuf</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">lambda_1</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">lambda_2</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">Kuu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cholesky</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    From  Kuu, Kuf, λ₁, λ₂, computes statistics</span>
+<span class="sd">    L = Kuu⁻¹ (Σₙ Kufₙ λ₂ₙ Kfₙu) Kuu⁻¹</span>
+<span class="sd">    l = Kuu⁻¹ (Σₙ Kufₙ λ₁ₙ)</span>
+
+<span class="sd">    :param Kuf: L x M x N</span>
+<span class="sd">    :param lambda_2: N x L</span>
+<span class="sd">    :param lambda_1: N x L</span>
+<span class="sd">    :param Kuu: L x M x M</span>
+
+<span class="sd">    return:</span>
+<span class="sd">    l : M x L</span>
+<span class="sd">    L : L x M x M</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">shape_constraints</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">Kuf</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">lambda_1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">lambda_2</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">]),</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">Kuu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">Kuu</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]))</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">debugging</span><span class="o">.</span><span class="n">assert_shapes</span><span class="p">(</span>
+        <span class="n">shape_constraints</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;conditional_from_precision_sites() arguments &quot;</span>
+        <span class="s2">&quot;[Note that this check verifies the shape of an alternative &quot;</span>
+        <span class="s2">&quot;representation of Kmn. See the docs for the actual expected &quot;</span>
+        <span class="s2">&quot;shape.]&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">num_latent</span> <span class="o">=</span> <span class="n">lambda_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">Kuf</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="p">[</span><span class="n">num_latent</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">tf</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">Kuf</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">Kuf</span>
+    <span class="k">if</span> <span class="n">Kuu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Kuu</span> <span class="o">=</span> <span class="n">Kuu</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="k">if</span> <span class="n">tf</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">Kuu</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">Kuu</span>
+        <span class="n">Luu</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">Kuu</span><span class="p">)</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky_solve</span><span class="p">(</span><span class="n">Luu</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+
+    <span class="n">l</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;lmn,nl-&gt;ml&quot;</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">lambda_1</span><span class="p">)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;lmn,lon,nl-&gt;lmo&quot;</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">lambda_2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cholesky</span><span class="p">:</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">l</span><span class="p">,</span> <span class="n">L</span></div>
+
+
+<div class="viewcode-block" id="kl_from_precision_sites_white"><a class="viewcode-back" href="../../autoapi/src/util/index.html#src.util.kl_from_precision_sites_white">[docs]</a><span class="k">def</span> <span class="nf">kl_from_precision_sites_white</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">L2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the kl divergence KL[q(f)|p(f)]</span>
+
+<span class="sd">    where:</span>
+<span class="sd">    q(f) = N(μ,Σ) and covariance of a Gaussian with natural parameters</span>
+<span class="sd">    with</span>
+<span class="sd">        Σ = Λ⁻¹  = (A⁻¹  + A⁻¹LLᵀA⁻¹)⁻¹  = A(A + LLᵀ)⁻¹A</span>
+<span class="sd">        μ = Λ⁻¹ A⁻¹l = Σ A⁻¹l</span>
+
+<span class="sd">    p(f) = N(0,A)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">shape_constraints</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">]),</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">L</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">L</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">L2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">L2</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]))</span>
+
+    <span class="n">tf</span><span class="o">.</span><span class="n">debugging</span><span class="o">.</span><span class="n">assert_shapes</span><span class="p">(</span>
+        <span class="n">shape_constraints</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;kl_from_prec_precond() arguments &quot;</span>
+        <span class="s2">&quot;[Note that this check verifies the shape of an alternative &quot;</span>
+        <span class="s2">&quot;representation of Kmn. See the docs for the actual expected &quot;</span>
+        <span class="s2">&quot;shape.]&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">L2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">L2</span> <span class="o">=</span> <span class="n">L</span> <span class="o">@</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">L2</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">L2</span> <span class="o">+</span> <span class="n">A</span>
+    <span class="n">LR</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="n">LA</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+    <span class="c1"># log det term</span>
+    <span class="n">log_det</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">diag_part</span><span class="p">(</span><span class="n">LR</span><span class="p">))))</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">diag_part</span><span class="p">(</span><span class="n">LA</span><span class="p">)))</span>
+    <span class="p">)</span>
+
+    <span class="c1"># trace term</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">triangular_solve</span><span class="p">(</span><span class="n">LR</span><span class="p">,</span> <span class="n">LA</span><span class="p">)</span>
+    <span class="n">trace_plus_const</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c1"># mahalanobis term</span>
+    <span class="n">mahalanobis</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">LA</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky_solve</span><span class="p">(</span><span class="n">LR</span><span class="p">,</span> <span class="n">l</span><span class="p">),</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">log_det</span> <span class="o">+</span> <span class="n">trace_plus_const</span> <span class="o">+</span> <span class="n">mahalanobis</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kl_from_precision_sites"><a class="viewcode-back" href="../../autoapi/src/util/index.html#src.util.kl_from_precision_sites">[docs]</a><span class="k">def</span> <span class="nf">kl_from_precision_sites</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">L2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the kl divergence KL[q(f)|p(f)]</span>
+
+<span class="sd">    where:</span>
+<span class="sd">    q(f) = N(μ,Σ) and covariance of a Gaussian with natural parameters</span>
+<span class="sd">    with</span>
+<span class="sd">        Σ = Λ⁻¹  = (A⁻¹  + A⁻¹LLᵀA⁻¹)⁻¹  = A(A + LLᵀ)⁻¹A</span>
+<span class="sd">        μ = Λ⁻¹ A⁻¹l = Σ A⁻¹l</span>
+
+<span class="sd">    p(f) = N(0,A)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">shape_constraints</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">]),</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">L</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">L</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">L2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">L2</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]))</span>
+
+    <span class="n">tf</span><span class="o">.</span><span class="n">debugging</span><span class="o">.</span><span class="n">assert_shapes</span><span class="p">(</span>
+        <span class="n">shape_constraints</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;kl_from_prec_precond() arguments &quot;</span>
+        <span class="s2">&quot;[Note that this check verifies the shape of an alternative &quot;</span>
+        <span class="s2">&quot;representation of Kmn. See the docs for the actual expected &quot;</span>
+        <span class="s2">&quot;shape.]&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">L2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">L2</span> <span class="o">=</span> <span class="n">L</span> <span class="o">@</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">L2</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">R</span> <span class="o">=</span> <span class="n">L2</span> <span class="o">+</span> <span class="n">A</span>
+    <span class="n">LR</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="n">LA</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+    <span class="c1"># log det term</span>
+    <span class="n">log_det</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">diag_part</span><span class="p">(</span><span class="n">LR</span><span class="p">))))</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">diag_part</span><span class="p">(</span><span class="n">LA</span><span class="p">)))</span>
+    <span class="p">)</span>
+
+    <span class="c1"># trace term</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">triangular_solve</span><span class="p">(</span><span class="n">LR</span><span class="p">,</span> <span class="n">LA</span><span class="p">)</span>
+    <span class="n">trace_plus_const</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c1"># mahalanobis term</span>
+    <span class="n">mahalanobis</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">LA</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky_solve</span><span class="p">(</span><span class="n">LR</span><span class="p">,</span> <span class="n">l</span><span class="p">),</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">log_det</span> <span class="o">+</span> <span class="n">trace_plus_const</span> <span class="o">+</span> <span class="n">mahalanobis</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="posterior_from_dense_site"><a class="viewcode-back" href="../../autoapi/src/util/index.html#src.util.posterior_from_dense_site">[docs]</a><span class="k">def</span> <span class="nf">posterior_from_dense_site</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">lambda_1</span><span class="p">,</span> <span class="n">lambda_2_sqrt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the mean and cholesky factor of the density q(u) = p(u)t(u) = 𝓝(u; m, S)</span>
+<span class="sd">    where p(u) = 𝓝(u; 0, K) and t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)</span>
+
+<span class="sd">    P = -2Λ₂</span>
+
+<span class="sd">    S = (K⁻¹ + P)⁻¹ = (K⁻¹ + LLᵀ)⁻¹ = K - KLW⁻¹LᵀK , W = (I + LᵀKL)</span>
+<span class="sd">    m = S λ₁</span>
+
+<span class="sd">    Input:</span>
+<span class="sd">    :param: K : M x M</span>
+<span class="sd">    :param: lambda_1: M x P</span>
+<span class="sd">    :param: lambda_2: P x M x M</span>
+
+<span class="sd">    Output:</span>
+<span class="sd">    m: M x P</span>
+<span class="sd">    chol_S: P x M x M</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shape_constraints</span> <span class="o">=</span> <span class="p">[(</span><span class="n">K</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span> <span class="p">(</span><span class="n">lambda_1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">]),</span> <span class="p">(</span><span class="n">lambda_2_sqrt</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">])]</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">debugging</span><span class="o">.</span><span class="n">assert_shapes</span><span class="p">(</span>
+        <span class="n">shape_constraints</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;posterior_from_dense_site() arguments &quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">L</span> <span class="o">=</span> <span class="n">lambda_2_sqrt</span>  <span class="c1"># L - likelihood precision square root</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">Id</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_float</span><span class="p">())</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+
+    <span class="c1"># W = I + Lₜᵀ Lₚ Lₚᵀ Lₜ, chol(W)</span>
+    <span class="n">CtL</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">Id</span> <span class="o">+</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">CtL</span><span class="p">,</span> <span class="n">CtL</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">chol_W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+
+    <span class="c1"># S_q = K - K W⁻¹K = K - [Lw⁻¹ K]ᵀ[Lw⁻¹ K]</span>
+    <span class="n">LtK</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">iwLtK</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">triangular_solve</span><span class="p">(</span><span class="n">chol_W</span><span class="p">,</span> <span class="n">LtK</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">adjoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">S_q</span> <span class="o">=</span> <span class="n">K</span> <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">iwLtK</span><span class="p">,</span> <span class="n">iwLtK</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">chol_S_q</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">S_q</span><span class="p">)</span>
+    <span class="n">m_q</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;lmn,nl-&gt;ml&quot;</span><span class="p">,</span> <span class="n">S_q</span><span class="p">,</span> <span class="n">lambda_1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">m_q</span><span class="p">,</span> <span class="n">chol_S_q</span></div>
+
+
+<div class="viewcode-block" id="posterior_from_dense_site_white"><a class="viewcode-back" href="../../autoapi/src/util/index.html#src.util.posterior_from_dense_site_white">[docs]</a><span class="k">def</span> <span class="nf">posterior_from_dense_site_white</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">lambda_1</span><span class="p">,</span> <span class="n">lambda_2</span><span class="p">,</span> <span class="n">jitter</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the mean and cholesky factor of the density q(u) = p(u)t(u) = 𝓝(u; m, S)</span>
+<span class="sd">    where p(u) = 𝓝(u; 0, K) and t(u) = exp(uᵀλ₁ - ½ uᵀΛ₂u)</span>
+
+<span class="sd">    S = Λ₂⁻¹ = (K⁻¹ + K⁻¹PK⁻¹)⁻¹ = = [K⁻¹(K + P)K⁻¹]⁻¹  = K(K + P)⁻¹K</span>
+<span class="sd">    m = S K⁻¹λ₁ = K(K + LLᵀ)⁻¹λ₁</span>
+
+<span class="sd">    Input:</span>
+<span class="sd">    :param: K : M x M</span>
+<span class="sd">    :param: lambda_1: M x P</span>
+<span class="sd">    :param: lambda_2: P x M x M</span>
+
+<span class="sd">    Output:</span>
+<span class="sd">    m: M x P</span>
+<span class="sd">    chol_S: P x M x M</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">shape_constraints</span> <span class="o">=</span> <span class="p">[(</span><span class="n">K</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">]),</span> <span class="p">(</span><span class="n">lambda_1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">]),</span> <span class="p">(</span><span class="n">lambda_2</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">])]</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">debugging</span><span class="o">.</span><span class="n">assert_shapes</span><span class="p">(</span>
+        <span class="n">shape_constraints</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;posterior_from_dense_site_white() arguments &quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">lambda_2</span>  <span class="c1"># L - likelihood precision square root</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">Id</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">K</span> <span class="o">+</span> <span class="n">P</span>
+    <span class="n">LR</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">R</span> <span class="o">+</span> <span class="n">Id</span> <span class="o">*</span> <span class="n">jitter</span><span class="p">)</span>
+    <span class="n">iLRK</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">triangular_solve</span><span class="p">(</span><span class="n">LR</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>
+    <span class="n">S_q</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">iLRK</span><span class="p">,</span> <span class="n">iLRK</span><span class="p">,</span> <span class="n">transpose_a</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">chol_S_q</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">S_q</span><span class="p">)</span>
+    <span class="n">m_q</span> <span class="o">=</span> <span class="p">(</span><span class="n">K</span> <span class="o">@</span> <span class="n">tf</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky_solve</span><span class="p">(</span><span class="n">LR</span><span class="p">,</span> <span class="n">lambda_1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">m_q</span><span class="p">,</span> <span class="n">chol_S_q</span></div>
+
+
+<div class="viewcode-block" id="gradient_transformation_mean_var_to_expectation"><a class="viewcode-back" href="../../autoapi/src/util/index.html#src.util.gradient_transformation_mean_var_to_expectation">[docs]</a><span class="k">def</span> <span class="nf">gradient_transformation_mean_var_to_expectation</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">grads</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transforms gradient 𝐠 of a function wrt [μ, σ²]</span>
+<span class="sd">    into its gradients wrt to [μ, σ² + μ²]</span>
+<span class="sd">    :param inputs: [μ, σ²]</span>
+<span class="sd">    :param grads: 𝐠</span>
+<span class="sd">    Output:</span>
+<span class="sd">    ▽μ</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">grads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;lmo,ol-&gt;ml&quot;</span><span class="p">,</span> <span class="n">grads</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">inputs</span><span class="p">),</span> <span class="n">grads</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright .<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
