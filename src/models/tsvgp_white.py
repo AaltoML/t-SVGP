@@ -130,7 +130,8 @@ class t_SVGP_white(GPModel):
         tf.debugging.assert_positive(var)  # We really should make the tests pass with this here
         return mu + self.mean_function(Xnew), var
 
-    def predict_f_extra_data(self, Xnew: InputData, extra_data=RegressionData) -> MeanAndVariance:
+    def predict_f_extra_data(self, Xnew: InputData, extra_data=RegressionData,
+                             jitter=default_jitter()) -> MeanAndVariance:
         """
         Compute the mean and variance of the latent function at some new points
         Xnew.
@@ -141,7 +142,7 @@ class t_SVGP_white(GPModel):
         lambda_1 = self.lambda_1
         lambda_2 = -0.5 * self.lambda_2
 
-        K_uu = Kuu(self.inducing_variable, self.kernel, jitter=default_jitter())
+        K_uu = Kuu(self.inducing_variable, self.kernel, jitter=jitter)
 
         lambda_1c = lambda_1 + K_uu @ grad_mu[0]
         lambda_2c = -2 * (lambda_2 + K_uu @ grad_mu[1] @ K_uu)
