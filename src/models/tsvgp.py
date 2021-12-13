@@ -231,7 +231,7 @@ class t_SVGP(base_SVGP):
         tf.debugging.assert_positive(var)  # We really should make the tests pass with this here
         return mu + self.mean_function(Xnew), var
 
-    def natgrad_step(self, X, Y, lr=0.1, jitter=1e-9):
+    def natgrad_step(self, data, lr=0.1, jitter=1e-9):
         """Takes natural gradient step in Variational parameters in the local parameters
         λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
         Input:
@@ -242,6 +242,7 @@ class t_SVGP(base_SVGP):
         Output:
         Updates the params
         """
+        X, Y = data
         mean, var = self.predict_f(X)
 
         # todo : hack to get heterokedastic demo to run

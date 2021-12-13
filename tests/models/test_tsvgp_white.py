@@ -74,8 +74,8 @@ def test_prediction_after_update(t_svgp_normal_vs_white_init):
     lr = 0.9
 
     # step on the t_svgp
-    t_svgp.natgrad_step(X, Y, lr=lr)
-    t_svgp_white.natgrad_step(X, Y, lr=lr)
+    t_svgp.natgrad_step((X, Y), lr=lr)
+    t_svgp_white.natgrad_step((X, Y), lr=lr)
 
     m, v = t_svgp.predict_f(data[0])
     m_white, v_white = t_svgp_white.predict_f(data[0])
@@ -105,7 +105,7 @@ def _t_svgp_gpr_optim_setup():
         inducing_variable=gpflow.inducing_variables.InducingPoints(time_points),
     )
 
-    t_svgp.natgrad_step(*input_data, lr=1.0)
+    t_svgp.natgrad_step(input_data, lr=1.0)
 
     return t_svgp, gpr
 
@@ -141,7 +141,7 @@ def _t_svgp_svgp_optim_setup():
 
         natgrad_rep = 20
         # one step of natgrads for t_svgp
-        [t_svgp.natgrad_step(*input_data, lr=1.0) for _ in range(natgrad_rep)]
+        [t_svgp.natgrad_step(input_data, lr=1.0) for _ in range(natgrad_rep)]
         # one step of natgrads for SVGP
         natgrad_opt = NaturalGradient(gamma=1.0)
         variational_params = [(svgp.q_mu, svgp.q_sqrt)]
@@ -171,7 +171,7 @@ def test_t_svgp_unchanged_at_optimum(t_svgp_gpr_optim_setup):
     optim_elbo = t_svgp.elbo(data)
     # site update step
     for i in range(10):
-        t_svgp.natgrad_step(*data, lr=0.9)
+        t_svgp.natgrad_step(data, lr=0.9)
         print(t_svgp.lambda_1)
     # ELBO after step
     new_elbo = t_svgp.elbo(data)

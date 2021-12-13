@@ -37,7 +37,7 @@ def _tsvgp_gpr_optim_setup():
         inducing_variable=gpflow.inducing_variables.InducingPoints(time_points),
     )
     for i in range(10):
-        tsvgp.natgrad_step(*input_data, lr=0.9)
+        tsvgp.natgrad_step(input_data, lr=0.9)
 
     return tsvgp, gpr
 
@@ -73,7 +73,7 @@ def _tsvgp_qsvgp_optim_setup():
 
         natgrad_rep = 20
         # one step of natgrads for tSVGP
-        [tsvgp.natgrad_step(*input_data, lr=1.0) for _ in range(natgrad_rep)]
+        [tsvgp.natgrad_step(input_data, lr=1.0) for _ in range(natgrad_rep)]
         # one step of natgrads for qSVGP
         natgrad_opt = NaturalGradient(gamma=1.0)
         variational_params = [(svgp.q_mu, svgp.q_sqrt)]
@@ -138,7 +138,7 @@ def test_tsvgp_unchanged_at_optimum(tsvgp_gpr_optim_setup):
     data = gpr.data
     optim_elbo = tsvgp.elbo(data)
     # site update step
-    tsvgp.natgrad_step(*data, lr=0.9)
+    tsvgp.natgrad_step(data, lr=0.9)
     # ELBO after step
     new_elbo = tsvgp.elbo(data)
 

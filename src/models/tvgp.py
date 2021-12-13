@@ -10,11 +10,12 @@ from gpflow.kernels import Kernel
 from gpflow.likelihoods import Likelihood
 from gpflow.mean_functions import MeanFunction
 from gpflow.models.model import GPModel, InputData, MeanAndVariance, RegressionData
+from gpflow.models.training_mixins import InternalDataTrainingLossMixin
 
 from src.sites import DiagSites
 
 
-class t_VGP(GPModel):
+class t_VGP(GPModel, InternalDataTrainingLossMixin):
     r"""
     This method approximates the Gaussian process posterior using a multivariate Gaussian.
 

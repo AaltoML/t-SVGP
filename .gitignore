@@ -3,6 +3,7 @@
 *.idea*
 *ipynb_checkpoints*
 *.ipynb
+*.DS_Store
 *.coverage
 *egg*
 *__pycache__*
