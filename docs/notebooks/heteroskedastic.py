@@ -76,7 +76,6 @@ inducing_variable = gpf.inducing_variables.SharedIndependentInducingVariables(
 m_tsvgp = t_SVGP(kernel, likelihood, inducing_variable, num_data=N, num_latent_gps=2)
 
 
-
 # %% [markdown]
 """
 ## Plot pre-training (a priori) prediction
@@ -131,7 +130,6 @@ def M_step():
         optimizer.minimize(m_tsvgp.training_loss_closure(data), m_tsvgp.kernel.trainable_variables)
         for _ in range(nit_m)
     ]
-
 
 
 # %% [markdown]
