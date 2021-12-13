@@ -18,7 +18,7 @@ tf.random.set_seed(42)
 def setup():
 
     N, M = 10, 3
-    kernel = gpflow.kernels.RBF(lengthscales=LENGTH_SCALE, variance=VARIANCE)
+    kernel = gpflow.kernels.RBF(lengthscales=LENGTH_SCALE,variance=VARIANCE)
     X = to_default_float(np.random.randn(N, 1))
     Y = to_default_float(np.random.randn(N, 1))
     Z = to_default_float(np.random.randn(M, 1))
@@ -64,21 +64,6 @@ def setup_extra():
     )
 
     return (X, Y), (X_extra, Y_extra), (X_concat, Y_concat), tsgpr, tsgpr_
-
-
-def setup_classification():
-    """Data, kernel and likelihood setup"""
-
-    def func(x):
-        return np.sin(x * 3 * 3.14) + 0.3 * np.cos(x * 9 * 3.14) + 0.5 * np.sin(x * 7 * 3.14)
-
-    input_points = rng.rand(NUM_DATA, 1) * 2 - 1  # X values
-    observations = func(input_points) + 0.2 * rng.randn(NUM_DATA, 1)
-
-    kernel = gpflow.kernels.SquaredExponential(lengthscales=LENGTH_SCALE, variance=VARIANCE)
-    variance = tf.constant(NOISE_VARIANCE, dtype=tf.float64)
-
-    return input_points, observations, kernel, variance
 
 
 def test_dsgpr_predict_against_gpflow_sgpr():
