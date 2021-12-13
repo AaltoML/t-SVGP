@@ -44,7 +44,7 @@ func = lambda x: np.sin(15 * x)
 N = 200  # Number of training observations
 X = rng.rand(N, 1) * 2 - 1  # X values
 F = func(X)
-var_noise = 1.**2
+var_noise = 1.0 ** 2
 Y = F + np.sqrt(var_noise) * rng.randn(N, 1)
 
 # GP parameters
@@ -73,7 +73,7 @@ Z = np.linspace(X.min(), X.max(), M).reshape(-1, 1)
 m_gpr = gpflow.models.GPR(
     data=(X, Y),
     kernel=gpflow.kernels.SquaredExponential(lengthscales=len_gp, variance=var_gp),
-    noise_variance=var_noise
+    noise_variance=var_noise,
 )
 
 m_t = t_SVGP(
@@ -107,13 +107,12 @@ m_q = gpflow.models.SVGP(
 )
 
 
-
 # %% [markdown]
 """
 ## Training model
 """
 # %%
-lr_natgrad = .9
+lr_natgrad = 0.9
 nit = 5
 
 data = (tf.convert_to_tensor(X), tf.convert_to_tensor(Y))
@@ -150,20 +149,21 @@ x_grid = np.linspace(-1, 1, n_grid).reshape(-1, 1)
 m, v = [a.numpy() for a in m_t.predict_y(x_grid)]
 
 plt.plot(x_grid, m)
-plt.fill_between(x_grid.reshape(-1,), 
-                 y1=(m-2*np.sqrt(v)).reshape(-1,), 
-                 y2=(m+2*np.sqrt(v)).reshape(-1,), 
-                 alpha=.2)
-plt.vlines(
-    Z,
-    ymin=F.min() - .1,
-    ymax=F.max() + .1,
-    linewidth=1.5,
-    color='grey',
-    alpha=.3
+plt.fill_between(
+    x_grid.reshape(
+        -1,
+    ),
+    y1=(m - 2 * np.sqrt(v)).reshape(
+        -1,
+    ),
+    y2=(m + 2 * np.sqrt(v)).reshape(
+        -1,
+    ),
+    alpha=0.2,
 )
+plt.vlines(Z, ymin=F.min() - 0.1, ymax=F.max() + 0.1, linewidth=1.5, color="grey", alpha=0.3)
 plt.plot(x_grid, func(x_grid))
-plt.plot(X, Y, ".", alpha=.3)
+plt.plot(X, Y, ".", alpha=0.3)
 plt.show()
 
 # %% [markdown]

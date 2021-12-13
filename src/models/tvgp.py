@@ -111,6 +111,21 @@ class t_VGP(GPModel, InternalDataTrainingLossMixin):
         elbo = log_Z - E_q_log_t + E_q_log_lik
         return elbo
 
+    def compute_natural_gradients(self):
+        """Compute the natural gradients of the log likelihood terms
+        specified by the input output pairs in data
+        :returns: List of 2 tensors of size
+            [num_data, num_latents], [num_data, num_latents]
+        """
+        X, Y = self.data
+        mean, var = self.predict_f(X)
+        with tf.GradientTape() as g:
+            g.watch([mean, var])
+            ve = self.likelihood.variational_expectations(mean, var, Y)
+        grads = g.gradient(ve, [mean, var])
+
+        return grads[0] - 2.0 * grads[1] * mean, grads[1]
+
     def update_variational_parameters(self, beta=0.05) -> tf.Tensor:
         """Takes natural gradient step in Variational parameters in the local parameters
         λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁

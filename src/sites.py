@@ -60,7 +60,9 @@ class DenseSites(Sites):
 
         if lambda_2_sqrt is not None:
             self.factor = True
-            self._lambda_2_sqrt = Parameter(lambda_2_sqrt, transform=triangular(), trainable=False)  # [L|P, M, M]
+            self._lambda_2_sqrt = Parameter(
+                lambda_2_sqrt, transform=triangular(), trainable=False
+            )  # [L|P, M, M]
         else:
             self._lambda_2 = Parameter(lambda_2, trainable=False)  # [L|P, M, M]
             self.factor = False
