@@ -113,5 +113,5 @@ def test_tsgpr_predict_extra_cond_against_gpflow_sgpr():
     tsgpr.natgrad_step((X, Y), lr=1.0)
     means_, vars_ = tsgpr.predict_f_extra_data(X, extra_data=(X_extra, Y_extra))
 
-    np.testing.assert_array_almost_equal(means, means_, decimal=4)
-    np.testing.assert_array_almost_equal(vars, vars_, decimal=4)
+    np.testing.assert_array_almost_equal(means, means_, decimal=3)
+    np.testing.assert_array_almost_equal(vars, vars_, decimal=3)
