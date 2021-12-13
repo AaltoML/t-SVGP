@@ -108,6 +108,7 @@ class t_SVGP_white(GPModel):
         )  # [P, M, M] or [M, M]
         return posterior_from_dense_site_white(K_uu, self.lambda_1, self.lambda_2)
 
+
     @property
     def cache_statistics(self):
         return self.cache_statistics_from_data(self.data)
@@ -130,13 +131,14 @@ class t_SVGP_white(GPModel):
         tf.debugging.assert_positive(var)  # We really should make the tests pass with this here
         return mu + self.mean_function(Xnew), var
 
-    def predict_f_extra_data(self, Xnew: InputData, extra_data=RegressionData) -> MeanAndVariance:
+    def predict_f_extra_data(
+            self, Xnew: InputData, extra_data=RegressionData, iter=1, lr=1.0) -> MeanAndVariance:
         """
         Compute the mean and variance of the latent function at some new points
         Xnew.
         """
 
-        grad_mu = self.compute_natural_gradients(extra_data)
+        grad_mu = self.compute_data_natural_params(extra_data)
 
         lambda_1 = self.lambda_1
         lambda_2 = -0.5 * self.lambda_2
@@ -144,13 +146,14 @@ class t_SVGP_white(GPModel):
         K_uu = Kuu(self.inducing_variable, self.kernel, jitter=default_jitter())
 
         lambda_1c = lambda_1 + K_uu @ grad_mu[0]
-        lambda_2c = -2 * (lambda_2 + K_uu @ grad_mu[1] @ K_uu)
+        lambda_2c = -2*(lambda_2 + K_uu @ grad_mu[1] @ K_uu)
 
         # predicting at new inputs
         K_uf = Kuf(self.inducing_variable, self.kernel, Xnew)
         K_ff = self.kernel.K_diag(Xnew)[..., None]
 
-        mu, var = conditional_from_precision_sites_white(K_uu, K_ff, K_uf, lambda_1c, L2=lambda_2c)
+        mu, var = conditional_from_precision_sites_white(
+                    K_uu, K_ff, K_uf, lambda_1c, L2=lambda_2c)
 
         return mu + self.mean_function(Xnew), var
 
@@ -175,14 +178,7 @@ class t_SVGP_white(GPModel):
         """The variational lower bound"""
         return self.elbo()
 
-    def compute_natural_gradients(self, data, jitter=1e-9):
-        """Compute the natural gradients of the log likelihood terms
-        specified by the input output pairs in data
-        :param data: List of 2 tensors of size [num_data, input_dim], [num_data, num_latents]
-        :param jitter: jitter parameter
-        :returns: List of 2 tensors of size
-            [num_inducing, num_latents], [num_latents, num_inducing, num_inducing]
-        """
+    def compute_data_natural_params(self, data, jitter=1e-9, nat_params=None):
         X, Y = data
         mean, var = self.predict_f(X)
         meanZ, varZ = self.predict_f(self.inducing_variable.Z)
@@ -212,7 +208,8 @@ class t_SVGP_white(GPModel):
 
         return grad_mu
 
-    def natgrad_step(self, data, lr=0.1):
+
+    def natgrad_step(self, dataset, lr=0.1, jitter=1e-9):
         """Takes natural gradient step in Variational parameters in the local parameters
         λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
 
@@ -225,9 +222,11 @@ class t_SVGP_white(GPModel):
         Updates the params
         """
 
-        X, Y = data
+        X, Y = dataset
+
         # chain rule at f
-        grad_mu = self.compute_natural_gradients((X, Y))
+        grad_mu = self.compute_data_natural_params((X, Y))
+        K_uu = Kuu(self.inducing_variable, self.kernel)
 
         if self.num_data is not None:
             num_data = tf.cast(self.num_data, dtype=tf.float64)
@@ -240,7 +239,6 @@ class t_SVGP_white(GPModel):
         lambda_2 = -0.5 * self.lambda_2
 
         # compute update in natural form
-        K_uu = Kuu(self.inducing_variable, self.kernel)
         lambda_1 = (1.0 - lr) * lambda_1 + lr * scale * K_uu @ grad_mu[0]
         lambda_2 = (1.0 - lr) * lambda_2 + lr * scale * K_uu @ grad_mu[1] @ K_uu
 
