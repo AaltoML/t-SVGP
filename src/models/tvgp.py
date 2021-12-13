@@ -111,53 +111,6 @@ class t_VGP(GPModel, InternalDataTrainingLossMixin):
         elbo = log_Z - E_q_log_t + E_q_log_lik
         return elbo
 
-    def compute_natural_gradients(self):
-        """Compute the natural gradients of the log likelihood terms
-        specified by the input output pairs in data
-        :returns: List of 2 tensors of size
-            [num_data, num_latents], [num_data, num_latents]
-        """
-        X, Y = self.data
-        mean, var = self.predict_f(X)
-        with tf.GradientTape() as g:
-            g.watch([mean, var])
-            ve = self.likelihood.variational_expectations(mean, var, Y)
-        grads = g.gradient(ve, [mean, var])
-
-        return grads[0] - 2.0 * grads[1] * mean, grads[1]
-
-        # x_data, y_data = self.data
-        # pseudo_y = self.lambda_1 / self.lambda_2
-        # sW = tf.sqrt(tf.abs(self.lambda_2))
-        #
-        # # Computes conversion λ₁, λ₂ → m, V by using q(f) ≃ t(f)p(f)
-        # K = self.kernel(x_data) + tf.eye(self.num_data, dtype=default_float()) * default_jitter()
-        # L = tf.linalg.cholesky(
-        #     tf.eye(self.num_data, dtype=tf.float64) + (sW @ tf.transpose(sW)) * K
-        # )
-        # T = tf.linalg.solve(L, tf.tile(sW, (1, self.num_data)) * K)
-        # post_v = tf.reshape(
-        #     tf.linalg.diag_part(K) - tf.reduce_sum(T * T, axis=0), (self.num_data, 1)
-        # )
-        # alpha = sW * tf.linalg.solve(tf.transpose(L), tf.linalg.solve(L, sW * pseudo_y))
-        # post_m = K @ alpha
-        #
-        # # Keep alphas updated
-        # self.q_alpha = alpha
-        #
-        # # Get variational expectations derivatives.
-        # with tf.GradientTape(persistent=True) as g:
-        #     g.watch(post_m)
-        #     g.watch(post_v)
-        #     var_exp = self.likelihood.variational_expectations(post_m, post_v, y_data)
-        #
-        # d_exp_dm = g.gradient(var_exp, post_m)
-        # d_exp_dv = g.gradient(var_exp, post_v)
-        # del g
-        #
-        # # Take the tVGP step and transform to be ▽μ[Var_exp]
-        # return [d_exp_dm - 2.0 * (d_exp_dv * post_m), -2.0 * d_exp_dv]
-
     def update_variational_parameters(self, beta=0.05) -> tf.Tensor:
         """Takes natural gradient step in Variational parameters in the local parameters
         λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
