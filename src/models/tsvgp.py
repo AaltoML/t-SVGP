@@ -231,16 +231,13 @@ class t_SVGP(base_SVGP):
         tf.debugging.assert_positive(var)  # We really should make the tests pass with this here
         return mu + self.mean_function(Xnew), var
 
-    def natgrad_step(self, data, lr=0.1, jitter=1e-9):
-        """Takes natural gradient step in Variational parameters in the local parameters
-        λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
-        Input:
-        :param: X : N x D
-        :param: Y:  N x 1
-        :param: lr: Scalar
-
-        Output:
-        Updates the params
+    def compute_natural_gradients(self, data, jitter=1e-9):
+        """Compute the natural gradients of the log likelihood terms
+        specified by the input output pairs in data
+        :param data: List of 2 tensors of size [num_data, input_dim], [num_data, num_latents]
+        :param jitter: jitter parameter
+        :returns: List of 2 tensors of size
+            [num_inducing, num_latents], [num_latents, num_inducing, num_inducing]
         """
         X, Y = data
         mean, var = self.predict_f(X)
@@ -281,11 +278,24 @@ class t_SVGP(base_SVGP):
         ]
 
         # chain rule at f
-        grad_mu = gradient_transformation_mean_var_to_expectation(meanZ, grads)
+        return gradient_transformation_mean_var_to_expectation(meanZ, grads)
+
+    def natgrad_step(self, data, lr=0.1, jitter=1e-9):
+        """Takes natural gradient step in Variational parameters in the local parameters
+        λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
+        Input:
+        :param data: List of 2 tensors of size [num_data, input_dim], [num_data, num_latents]
+        :param lr: Scalar
+        :param jitter: Scalar
+
+        Output:
+        Updates the params
+        """
+        grad_mu = self.compute_natural_gradients(data, jitter=1e-9)
 
         if self.num_data is not None:
             num_data = tf.cast(self.num_data, dtype=tf.float64)
-            minibatch_size = tf.cast(tf.shape(X)[0], dtype=tf.float64)
+            minibatch_size = tf.cast(tf.shape(data[0])[0], dtype=tf.float64)
             scale = num_data / minibatch_size
         else:
             scale = tf.cast(1.0, dtype=tf.float64)
@@ -297,8 +307,10 @@ class t_SVGP(base_SVGP):
         lambda_2 = (1 - lr) * lambda_2 + lr * scale * grad_mu[1]
 
         # transform and perform update
+        Id = tf.eye(self.num_inducing, dtype=tf.float64)
         lambda_2_sqrt = -tf.linalg.cholesky(-2.0 * lambda_2 + Id * jitter)
         # To match SVGP you need to eliminate this jitter for minibatching
+
         self.lambda_1.assign(lambda_1)
         self.lambda_2_sqrt.assign(lambda_2_sqrt)
         self.get_mean_chol_cov_inducing_posterior()

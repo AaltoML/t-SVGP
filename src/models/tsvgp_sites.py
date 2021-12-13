@@ -111,6 +111,23 @@ class t_SVGP_sites(GPModel):
         lambda_1, lambda_2 = project_diag_sites(K_uf, self.lambda_1, self.lambda_2, cholesky=False)
         return posterior_from_dense_site_white(K_uu, lambda_1, lambda_2)
 
+    def compute_natural_gradients(
+        self,
+    ):
+        """Compute the natural gradients of the log likelihood terms
+        specified by the input output pairs in data
+        :returns: List of 2 tensors of size
+            [num_data, num_latents], [num_data, num_latents]
+        """
+        X, Y = self.data
+        mean, var = self.predict_f(X)
+        with tf.GradientTape() as g:
+            g.watch([mean, var])
+            ve = self.likelihood.variational_expectations(mean, var, Y)
+        grads = g.gradient(ve, [mean, var])
+
+        return grads[0] - 2.0 * grads[1] * mean, grads[1]
+
     def natgrad_step(self, lr=0.1):
         """Takes natural gradient step in Variational parameters in the local parameters
         λₜ = rₜ▽[Var_exp] + (1-rₜ)λₜ₋₁
@@ -122,15 +139,7 @@ class t_SVGP_sites(GPModel):
         Output:
         Updates the params
         """
-        X, Y = self.data
-        mean, var = self.predict_f(X)
-
-        with tf.GradientTape() as g:
-            g.watch([mean, var])
-            ve = self.likelihood.variational_expectations(mean, var, Y)
-        grads = g.gradient(ve, [mean, var])
-
-        grads = grads[0] - 2.0 * grads[1] * mean, grads[1]
+        grads = self.compute_natural_gradients()
 
         # compute update in natural form
         lambda_2 = -0.5 * self.lambda_2

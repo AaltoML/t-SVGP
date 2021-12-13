@@ -4,7 +4,7 @@
 LIB_NAME = t-SVGP
 SRC_NAME = src
 TESTS_NAME = tests
-LINT_NAMES = $(SRC_NAME) $(TESTS_NAME) notebooks
+LINT_NAMES = $(SRC_NAME) $(TESTS_NAME) docs/notebooks
 TYPE_NAMES = $(SRC_NAME)
 SUCCESS='\033[0;32m'
 UNAME_S = $(shell uname -s)

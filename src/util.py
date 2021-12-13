@@ -365,7 +365,11 @@ def posterior_from_dense_site(K, lambda_1, lambda_2_sqrt):
     m: M x P
     chol_S: P x M x M
     """
-    shape_constraints = [(K, [..., "M", "M"]), (lambda_1, ["N", "L"]), (lambda_2_sqrt, ["L", "M", "M"])]
+    shape_constraints = [
+        (K, [..., "M", "M"]),
+        (lambda_1, ["N", "L"]),
+        (lambda_2_sqrt, ["L", "M", "M"]),
+    ]
     tf.debugging.assert_shapes(
         shape_constraints,
         message="posterior_from_dense_site() arguments ",
@@ -436,6 +440,3 @@ def gradient_transformation_mean_var_to_expectation(inputs, grads):
     ▽μ
     """
     return grads[0] - 2.0 * tf.einsum("lmo,ol->ml", grads[1], inputs), grads[1]
-
-
-
